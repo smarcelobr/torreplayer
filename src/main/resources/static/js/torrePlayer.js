@@ -25,9 +25,9 @@ function infoUpdated(info) {
 
     const torrePlayButton = document.getElementById("torrePlayButton");
     if (torrePlayButton) {
-        torrePlayButton.style.display = (info.status!=="TOCANTO" && info.status!=="PARANDO" && info.musica.nome)?
+        torrePlayButton.style.display = (info.status!=="TOCANTO" && info.musica.nome)?
             "block":"none";
-        if (info.album && info.musica) {
+        if (info.musica) {
             torrePlayButton.onclick = function (ev) {
                 torrePlay(info.musica.album.nome, info.musica.nome);
             }

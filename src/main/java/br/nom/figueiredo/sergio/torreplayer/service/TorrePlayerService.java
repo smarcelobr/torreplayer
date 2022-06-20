@@ -78,14 +78,18 @@ public class TorrePlayerService {
         } else {
             result = this.info;
         }
-        try {
             if (nonNull(process)) {
                 if (process.isAlive()) {
                     result.setStatus(TorrePlayerStatus.TOCANDO);
                 } else {
                     if (isNull(result.getExitValue())) {
                         result.setExitValue(process.exitValue());
-                        result.appendOutput(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8));
+                        try {
+                            result.appendOutput(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8));
+                        } catch (IOException ex) {
+                            logger.debug("Falha ao ler InputStream do player", ex);
+                            result.appendOutput("Não foi possível ler inputstream do do player.\n");
+                        }
                         if (this.process.exitValue() != 0) {
                             result.setStatus(TorrePlayerStatus.ENCERRADO_ERRO);
                             result.appendOutput(String.format("%nExited with error code : %d", this.process.exitValue()));
@@ -96,9 +100,6 @@ public class TorrePlayerService {
                     }
                 }
             }
-        } catch (IOException ex) {
-            throw new MusicaException("Falhar ao obter info", ex);
-        }
 
         return result;
     }
