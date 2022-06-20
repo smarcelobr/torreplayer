@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="|Album ${album.nome}|">Música da Torre</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+</head>
+<!--/*@thymesVar id="msg" type="java.lang.String"*/-->
+<!--/*@thymesVar id="albums" type="java.util.List<br.nom.figueiredo.sergio.torreplayer.model.Album>"*/-->
+<!--/*@thymesVar id="album" type="br.nom.figueiredo.sergio.torreplayer.model.Album"*/-->
+<!--/*@thymesVar id="musicas" type="java.util.List<br.nom.figueiredo.sergio.torreplayer.model.Musica>"*/-->
+<!--/*@thymesVar id="musica" type="br.nom.figueiredo.sergio.torreplayer.model.Musica"*/-->
+<body>
+<div class="container">
+
+  <h1>M&uacute;sicas da Torre</h1>
+    <div class="alert alert-info" role="alert" th:if="${!#strings.isEmpty(msg)}">
+        <span th:text="${msg}">A simple info alert—check it out!</span>
+    </div>
+
+    <div class="row torreTocando" style="display: none">
+        <div class="col-8">
+        Tocando <span class="musicaTocandoNome" >música</span>
+        </div>
+        <div class="col-4">
+        <a class="btn btn-primary" role="button"
+           href="tocando.html" th:href="@{/stop}" >
+            <i class="bi bi-stop-circle-fill"></i> Parar</a>
+        </div>
+    </div>
+
+    <h2>&Aacute;lbum "<span th:text="${album.nome}">Nome do &Aacute;lbum</span>"</h2>
+    <ul class="list-group">
+        <li class="list-group-item" th:each="musica : ${musicas}">
+            <span th:text="${musica.nome}">Nome da M&uacute;sica</span>
+            <audio controls preload="none">
+                <source src="/album/relogio/2QUART.mp3"
+                        th:src="@{/album/{albumNome}/{musicaNome}(albumNome=${album.nome},musicaNome=${musica.nome})}"
+                        type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <a class="btn btn-primary float-end torreEmSilencio" role="button" style="display: none"
+               href="/torre/relogio/2QUART.mp3"
+               th:href="@{/torre/{albumNome}/{musicaNome}(albumNome=${album.nome},musicaNome=${musica.nome})}">
+                <i class="bi bi-play-circle-fill"></i> Torre</a>
+        </li>
+    </ul>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+  <script th:inline="javascript">
+      let URL = {
+          apiTorreInfo: /*[[@{/api/torre/info}]]*/ "/example/api/torre/info.json",
+          apiTorrePlay: /*[[@{/api/torre/play}]]*/ "/example/api/torre/play.json",
+          apiTorreStop: /*[[@{/api/torre/stop}]]*/ "/example/api/torre/stop.json"
+      };
+  </script>
+  <script src="/static/js/torrePlayer/torrePlayer.js" th:src="@{/js/torrePlayer/torrePlayer.js(c=${@cachePreventNumber})}" ></script>
+</body>
+</html>
