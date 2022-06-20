@@ -6,18 +6,33 @@ function infoUpdated(info) {
         info.musica = {nome: ""};
     }
 
-    const mostrarQdoNaoTocando = document.getElementsByClassName("torreEmSilencio");
-    const mostrarQdoTocando = document.getElementsByClassName("torreTocando");
     const torreMusicaNome = document.getElementsByClassName("torreMusicaNome");
-    const torreOutput = document.getElementsByClassName("torreOutput");
     Array.from(torreMusicaNome)
         .forEach((element) => element.innerText = info.musica.nome || "");
+
+    const mostrarQdoTocando = document.getElementsByClassName("torreTocando");
     Array.from(mostrarQdoTocando)
         .forEach((element) => element.style.display = info.status==="TOCANDO"?"block":"none");
+
+    const mostrarQdoNaoTocando = document.getElementsByClassName("torreEmSilencio");
     Array.from(mostrarQdoNaoTocando)
         .forEach((element) => element.style.display = info.status==="TOCANDO"?"none":"block");
-    Array.from(torreOutput)
-        .forEach((element) => element.innerText = info.output || "");
+
+    const torreOutput = document.getElementById("torreOutput");
+    if (torreOutput) {
+        torreOutput.innerText = info.output || "";
+    }
+
+    const torrePlayButton = document.getElementById("torrePlayButton");
+    if (torrePlayButton) {
+        torrePlayButton.style.display = (info.status!=="TOCANTO" && info.status!=="PARANDO" && info.musica.nome)?
+            "block":"none";
+        if (info.album && info.musica) {
+            torrePlayButton.onclick = function (ev) {
+                torrePlay(info.musica.album.nome, info.musica.nome);
+            }
+        }
+    }
 }
 
 function xhrInfoOnLoad() {

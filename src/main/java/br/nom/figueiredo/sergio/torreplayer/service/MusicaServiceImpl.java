@@ -105,9 +105,12 @@ public class MusicaServiceImpl implements MusicaService {
         if (isNull(path)) {
             return null;
         }
+        Path musicaAbsolutePath = path.toAbsolutePath();
         Musica musica = new Musica();
-        musica.setAbsolutePath(path.toAbsolutePath().toString());
+        musica.setAbsolutePath(musicaAbsolutePath.toString());
         musica.setNome(path.getFileName().toString());
+        Path albumPath = musicaAbsolutePath.getParent();
+        musica.setAlbum(albumFromPath(albumPath));
         return musica;
     }
 
@@ -121,14 +124,4 @@ public class MusicaServiceImpl implements MusicaService {
         }
     }
 
-    @Override
-    public Album getAlbumByMusica(Musica musica) {
-        Path musicaPath = toPath(musica);
-        if (nonNull(musicaPath)) {
-            Path albumPath = musicaPath.getParent();
-            return albumFromPath(albumPath);
-        } else {
-            return null;
-        }
-    }
 }

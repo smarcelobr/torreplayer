@@ -11,6 +11,7 @@ import org.springframework.web.context.WebApplicationContext;
 public class TorrePlayerApplication {
 
 	public static void main(String[] args) {
+		System.setProperty("server.servlet.context-path", "/musica");
 		SpringApplication.run(TorrePlayerApplication.class, args);
 	}
 

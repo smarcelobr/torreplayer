@@ -15,5 +15,4 @@ public interface MusicaService {
 
     InputStream getMusicStream(Musica musica);
 
-    Album getAlbumByMusica(Musica musica);
 }

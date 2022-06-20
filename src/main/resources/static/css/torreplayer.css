@@ -1,0 +1,20 @@
+#torre-player-info {
+    background-color: chocolate;
+    color: whitesmoke;
+    padding: 0.5em;
+}
+
+#torre-player-info #titulo {
+    color: whitesmoke;
+}
+
+
+#torreOutput {
+    margin: 0.5em 0;
+    border: darkgray solid 1px;
+    padding: 0.5em;
+}
+
+a {
+  text-decoration: none;
+}

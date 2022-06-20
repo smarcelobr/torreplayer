@@ -39,9 +39,7 @@ public class TorrePlayerController {
     @GetMapping(value = "info")
     public String acompanhamentoTorre(Model model) {
         TorrePlayerInfo info = torrePlayerService.getInfo();
-        Album album = musicaService.getAlbumByMusica(info.getMusica());
         model.addAttribute("torrePlayerInfo", info);
-        model.addAttribute("album", album);
         return "torrePlayer/info.html";
     }
 
