@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import static java.util.Objects.isNull;
@@ -23,6 +24,15 @@ public class TorrePlayerService {
 
     @Value("${torre.cmd.spaceEscape}")
     private String cmdSpaceScape;
+
+    @Value("${torre.cmd.stop.mode}")
+    private TorrePlayerStopMode stopMode;
+
+    /*
+     * Teclas a serem enviadas para o processo para terminá-lo.
+     */
+    @Value("${torre.cmd.stop.keys}")
+    private String stopKeys;
 
     private Process process;
     private TorrePlayerInfo info;
@@ -64,11 +74,35 @@ public class TorrePlayerService {
 
     public synchronized void stop() {
         if (this.isTocando()) {
-            this.process.destroy();
+            logger.debug("Parando a música...");
+            if (stopMode == TorrePlayerStopMode.KILL_PROCESS) {
+                killProcess();
+            } else if (stopMode == TorrePlayerStopMode.SEND_KEYS) {
+                sendKeys(this.stopKeys);
+            }
+
             if (nonNull(this.info)) {
                 this.info.setStatus(TorrePlayerStatus.PARANDO);
             }
         }
+    }
+
+    private void sendKeys(String keys) {
+        try {
+            logger.debug("Enviando teclas '{}'", keys);
+            OutputStream out = this.process.getOutputStream();
+            out.write(keys.getBytes(StandardCharsets.UTF_8));
+            out.flush();
+        } catch (IOException e) {
+            if (nonNull(this.info)) {
+                this.info.appendOutput("%nEnvio de teclas falhou");
+            }
+        }
+    }
+
+    private void killProcess() {
+        logger.debug("Matando o processo");
+        this.process.destroy();
     }
 
     public synchronized TorrePlayerInfo getInfo() {
