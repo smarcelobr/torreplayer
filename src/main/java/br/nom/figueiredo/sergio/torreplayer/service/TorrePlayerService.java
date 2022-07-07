@@ -5,6 +5,7 @@ import br.nom.figueiredo.sergio.torreplayer.model.Musica;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,9 @@ import static java.util.Objects.nonNull;
 
 @Service
 public class TorrePlayerService {
-    Logger logger = LoggerFactory.getLogger(TorrePlayerService.class);
+
+    private final Logger logger = LoggerFactory.getLogger(TorrePlayerService.class);
+    private final ConfigService configService;
 
     @Value("${torre.cmd.play}")
     private String cmdPlayTorre;
@@ -37,6 +40,11 @@ public class TorrePlayerService {
     private Process process;
     private TorrePlayerInfo info;
 
+    @Autowired
+    public TorrePlayerService(ConfigService configService) {
+        this.configService = configService;
+    }
+
     public synchronized void tocar(Musica musica) {
 
         if (this.isTocando()) {
@@ -49,7 +57,9 @@ public class TorrePlayerService {
         ProcessBuilder processBuilder = new ProcessBuilder();
 
         String absolutePath = musica.getAbsolutePath().replace(" ", this.cmdSpaceScape);
-        String cmd = cmdPlayTorre.replace("#musicaPath", absolutePath);
+        String cmd = cmdPlayTorre
+                .replace("#musicaPath", absolutePath)
+                .replace("#musicaVolume", Integer.toString(configService.getConfiguracoes().getMasterVolume()));
         processBuilder.command(cmd.split(","));
 
         try {
