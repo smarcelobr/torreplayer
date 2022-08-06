@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,10 +19,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class WebSecurityConfig  {
 
-    @Value("${admim.username}")
+    @Value("${admin.username}")
     private String adminUsername;
 
-    @Value("${admim.password}")
+    @Value("${admin.password}")
     private String adminPassword;
 
     @Bean
@@ -34,11 +33,6 @@ public class WebSecurityConfig  {
                 )
                 .httpBasic(withDefaults());
         return http.build();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().antMatchers("/ignore1", "/ignore2");
     }
 
     @Bean
