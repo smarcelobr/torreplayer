@@ -9,6 +9,12 @@
 
     <div th:replace="~{base::top-page}"></div>
 
+    <div class="mb-3">
+        <a class="btn btn-primary" role="button"
+           href="novo_album.html" th:href="@{/album/novo-album}">
+            <i class="bi bi-music-note-list"></i> Novo &Aacute;lbum</a>
+    </div>
+
     <h2>Álbuns</h2>
     <ul class="list-group">
         <li class="list-group-item" th:each="album : ${albums}">

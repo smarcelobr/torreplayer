@@ -3,7 +3,6 @@ package br.nom.figueiredo.sergio.torreplayer.controller;
 import br.nom.figueiredo.sergio.torreplayer.model.Album;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
 import br.nom.figueiredo.sergio.torreplayer.service.MusicaService;
-import br.nom.figueiredo.sergio.torreplayer.service.TorrePlayerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,12 @@ import java.util.List;
 public class HomeController {
     Logger logger = LoggerFactory.getLogger(HomeController.class);
 
-    @Autowired
-    private MusicaService musicaService;
+    private final MusicaService musicaService;
 
     @Autowired
-    private TorrePlayerService torrePlayerService;
+    public HomeController(MusicaService musicaService) {
+        this.musicaService = musicaService;
+    }
 
     @GetMapping(value = "/")
     public String listAlbums(Model model) {

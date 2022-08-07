@@ -6,21 +6,21 @@ import br.nom.figueiredo.sergio.torreplayer.model.Musica;
 import br.nom.figueiredo.sergio.torreplayer.service.MusicaService;
 import br.nom.figueiredo.sergio.torreplayer.service.TorrePlayerInfo;
 import br.nom.figueiredo.sergio.torreplayer.service.TorrePlayerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/torre")
 public class TorrePlayerApiController {
-    Logger logger = LoggerFactory.getLogger(TorrePlayerApiController.class);
+
+    private final MusicaService musicaService;
+    private final TorrePlayerService torrePlayerService;
 
     @Autowired
-    private MusicaService musicaService;
-
-    @Autowired
-    private TorrePlayerService torrePlayerService;
+    public TorrePlayerApiController(MusicaService musicaService, TorrePlayerService torrePlayerService) {
+        this.musicaService = musicaService;
+        this.torrePlayerService = torrePlayerService;
+    }
 
     @GetMapping(value = "info")
     public TorrePlayerInfo info() {

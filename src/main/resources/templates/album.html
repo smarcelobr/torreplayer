@@ -15,24 +15,37 @@
         <a class="btn btn-primary" role="button"
            href="index.html" th:href="@{/}">
             <i class="bi bi-house-fill"></i> In&iacute;cio</a>
+
+        <a class="btn btn-primary" role="button"
+           href="incluir_musica.html" th:href="@{/album/{albumNome}/incluir-musica(albumNome=${album.nome})}">
+            <i class="bi bi-file-music"></i> Incluir Música</a>
     </div>
 
     <h2>&Aacute;lbum "<span th:text="${album.nome}">Nome do &Aacute;lbum</span>"</h2>
     <ul class="list-group">
         <li class="list-group-item" th:each="musica : ${musicas}">
             <span th:text="${musica.nome}">Nome da M&uacute;sica</span>
+
             <audio controls preload="none">
                 <source src="/album/relogio/2QUART.mp3"
                         th:src="@{/album/{albumNome}/{musicaNome}(albumNome=${album.nome},musicaNome=${musica.nome})}"
                         type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
+
             <a class="btn btn-primary float-end torreEmSilencio" role="button" style="display: none"
                href="/torre/relogio/2QUART.mp3"
                th:href="@{/torre/{albumNome}/{musicaNome}(albumNome=${album.nome},musicaNome=${musica.nome})}">
                 <i class="bi bi-play-circle-fill"></i> Torre</a>
+
         </li>
     </ul>
+
+    <div th:if="${#lists.isEmpty(musicas)}">
+        Não há músicas neste álbum. Inclua a primeira música
+           <a href="incluir_musica.html"
+            th:href="@{/album/{albumNome}/incluir-musica(albumNome=${album.nome})}">clicando aqui</a>.
+    </div>
 </div>
 <div th:replace="~{base:: scripts}"></div>
 </body>

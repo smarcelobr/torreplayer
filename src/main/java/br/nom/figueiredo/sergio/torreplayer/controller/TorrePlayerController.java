@@ -5,8 +5,6 @@ import br.nom.figueiredo.sergio.torreplayer.model.Musica;
 import br.nom.figueiredo.sergio.torreplayer.service.MusicaService;
 import br.nom.figueiredo.sergio.torreplayer.service.TorrePlayerInfo;
 import br.nom.figueiredo.sergio.torreplayer.service.TorrePlayerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,13 +15,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("torre")
 public class TorrePlayerController {
-    Logger logger = LoggerFactory.getLogger(TorrePlayerController.class);
+
+    private final MusicaService musicaService;
+    private final TorrePlayerService torrePlayerService;
 
     @Autowired
-    private MusicaService musicaService;
-
-    @Autowired
-    private TorrePlayerService torrePlayerService;
+    public TorrePlayerController(MusicaService musicaService, TorrePlayerService torrePlayerService) {
+        this.musicaService = musicaService;
+        this.torrePlayerService = torrePlayerService;
+    }
 
     @GetMapping(value = "{albumNome}/{musicaNome}")
     public String playTorre(@PathVariable String albumNome,

@@ -15,4 +15,7 @@ public interface MusicaService {
 
     InputStream getMusicStream(Musica musica);
 
+    Musica postMusica(Album album, String nomeMusica, InputStream musicaContents);
+
+    Album postAlbum(String albumNome);
 }

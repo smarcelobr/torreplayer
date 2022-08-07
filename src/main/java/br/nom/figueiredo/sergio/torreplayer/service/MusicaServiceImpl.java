@@ -3,11 +3,13 @@ package br.nom.figueiredo.sergio.torreplayer.service;
 import br.nom.figueiredo.sergio.torreplayer.exception.MusicaException;
 import br.nom.figueiredo.sergio.torreplayer.model.Album;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -124,4 +126,36 @@ public class MusicaServiceImpl implements MusicaService {
         }
     }
 
+    @Override
+    public Musica postMusica(Album album, String nomeMusica, InputStream musicaContents) {
+        if (nonNull(album)) {
+            Path pathAlbum = toPath(album);
+            if (nonNull(pathAlbum)) {
+                Path musicaPath = pathAlbum.resolve(nomeMusica);
+                Musica musica = this.musicaFromPath(musicaPath);
+                try (OutputStream fileOutput = Files.newOutputStream(musicaPath)) {
+                    IOUtils.copy(musicaContents, fileOutput);
+                } catch (IOException e) {
+                    throw new MusicaException(String.format("Falha ao escrever música %s", musicaPath), e);
+                }
+                return musica;
+            } else {
+                throw new MusicaException(String.format("Album %s não existe",album.getNome()));
+            }
+        } else {
+            throw new MusicaException("Album não pode ser nulo");
+        }
+    }
+
+    @Override
+    public Album postAlbum(String albumNome) {
+        Path albumPath = Paths.get(albumFolder, albumNome);
+        try {
+            Files.createDirectory(albumPath);
+        } catch (IOException e) {
+            throw new MusicaException("Falha ao criar álbum.");
+        }
+
+        return albumFromPath(albumPath);
+    }
 }

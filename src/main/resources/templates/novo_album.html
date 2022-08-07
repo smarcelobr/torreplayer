@@ -1,0 +1,29 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head th:replace="~{base :: head}"></head>
+<!--/*@thymesVar id="msg" type="java.lang.String"*/-->
+<!--/*@thymesVar id="album" type="br.nom.figueiredo.sergio.torreplayer.model.Album"*/-->
+<body>
+<div class="container">
+    <div th:replace="~{base::top-page}"></div>
+
+    <div class="mb-3">
+        <a class="btn btn-primary" role="button"
+           href="index.html" th:href="@{/}">
+            <i class="bi bi-house-fill"></i> In&iacute;cio</a>
+    </div>
+
+    <h2>Criar novo &aacute;lbum</h2>
+
+    <div>
+        <form method="POST" enctype="multipart/form-data" action="">
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="nome" name="nome" aria-describedby="nomeHelp" size="28">
+                <div id="nomeHelp" class="form-text">Nome do novo &aacute;lbum que ser&aacute; criado.</div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-music-note-list"></i> Criar</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
