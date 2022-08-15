@@ -19,6 +19,10 @@
         <a class="btn btn-primary" role="button"
            href="incluir_musica.html" th:href="@{/album/{albumNome}/incluir-musica(albumNome=${album.nome})}">
             <i class="bi bi-file-music"></i> Incluir Música</a>
+
+        <a class="btn btn-secondary" role="button"
+           href="editar_album.html" th:href="@{/album/{albumNome}/editar-album(albumNome=${album.nome})}">
+            <i class="bi bi-pencil-square"></i> Editar</a>
     </div>
 
     <h2>&Aacute;lbum "<span th:text="${album.nome}">Nome do &Aacute;lbum</span>"</h2>

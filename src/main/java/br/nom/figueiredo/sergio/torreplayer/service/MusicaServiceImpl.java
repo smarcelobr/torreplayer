@@ -152,10 +152,21 @@ public class MusicaServiceImpl implements MusicaService {
         Path albumPath = Paths.get(albumFolder, albumNome);
         try {
             Files.createDirectory(albumPath);
+            return albumFromPath(albumPath);
         } catch (IOException e) {
             throw new MusicaException("Falha ao criar álbum.");
         }
+    }
 
-        return albumFromPath(albumPath);
+    @Override
+    public Album alterarNomeAlbum(String albumNome, String novoNome) {
+        Path albumPath = Paths.get(albumFolder, albumNome);
+        Path novoAlbumPath = Paths.get(albumFolder, novoNome);
+        try {
+            Path albumPathRenomeado = Files.move(albumPath, novoAlbumPath);
+            return albumFromPath(albumPathRenomeado);
+        } catch (IOException e) {
+            throw new MusicaException("Falha ao renomear o álbum.");
+        }
     }
 }

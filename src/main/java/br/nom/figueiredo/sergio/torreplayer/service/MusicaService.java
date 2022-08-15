@@ -18,4 +18,6 @@ public interface MusicaService {
     Musica postMusica(Album album, String nomeMusica, InputStream musicaContents);
 
     Album postAlbum(String albumNome);
+
+    Album alterarNomeAlbum(String albumNome, String novoNome);
 }

@@ -1,0 +1,51 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head th:replace="~{base :: head}"></head>
+<!--/*@thymesVar id="msg" type="java.lang.String"*/-->
+<!--/*@thymesVar id="album" type="br.nom.figueiredo.sergio.torreplayer.model.Album"*/-->
+<!--/*@thymesVar id="musicas" type="java.util.List<br.nom.figueiredo.sergio.torreplayer.model.Musica>"*/-->
+<!--/*@thymesVar id="musica" type="br.nom.figueiredo.sergio.torreplayer.model.Musica"*/-->
+<body>
+<div class="container">
+    <div th:replace="~{base::top-page}"></div>
+
+    <div class="mb-3">
+        <a class="btn btn-primary" role="button"
+           href="index.html" th:href="@{/}">
+            <i class="bi bi-house-fill"></i> In&iacute;cio</a>
+
+        <a class="btn btn-primary" role="button"
+           href="album.html" th:href="@{/album/{albumNome}(albumNome=${album.nome})}">
+            <i class="bi bi-music-note-list"></i> &Aacute;lbum</a>
+    </div>
+
+    <h2>Editar &aacute;lbum</h2>
+
+    <div>
+        <form method="POST" enctype="multipart/form-data" action="nome"
+              th:action="@{/album/{albumNome}/editar-album/nome(albumNome=${album.nome})}">
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="nome" name="novoNome" aria-describedby="nomeHelp" size="28"
+                th:value="${album.nome}">
+                <div id="nomeHelp" class="form-text">Altera o nome do &aacute;lbum.</div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Salvar</button>
+        </form>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="musica : ${musicas}">
+
+                <span th:text="${musica.nome}">Nome da M&uacute;sica</span>
+
+                <audio controls preload="none">
+                    <source src="/album/relogio/2QUART.mp3"
+                            th:src="@{/album/{albumNome}/{musicaNome}(albumNome=${album.nome},musicaNome=${musica.nome})}"
+                            type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
