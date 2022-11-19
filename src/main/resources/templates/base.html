@@ -35,7 +35,7 @@
 
 <div th:fragment="volume-control">
     <div class="volumeControl">
-        <label for="masterVolumeInput" class="form-label">Master Volume</label>
+        <label for="masterVolumeInput" class="form-label">Master Volume: <span id="volume">...</span></label>
         <input type="range" class="form-range" id="masterVolumeInput" min="0" max="1000" step="10"
                onchange="masterVolumeInputChange()" disabled>
     </div>

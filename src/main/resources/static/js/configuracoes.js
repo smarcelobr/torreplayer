@@ -9,6 +9,8 @@ function configUpdated(config) {
     const masterVolumeInput = document.getElementById("masterVolumeInput");
     masterVolumeInput.value = config.masterVolume;
     masterVolumeInput.disabled = false;
+    const volumeLabel = document.getElementById("volume");
+    volumeLabel.innerText = ""+config.masterVolume;
 }
 
 function xhrConfigOnLoad() {
