@@ -10,9 +10,15 @@
     <div th:replace="~{base::top-page}"></div>
 
     <div class="mb-3">
-        <a class="btn btn-primary" role="button"
+        <a class="btn btn-primary mb-3" role="button"
            href="novo_album.html" th:href="@{/album/novo-album}">
             <i class="bi bi-music-note-list"></i> Novo &Aacute;lbum</a>
+        <a class="btn btn-primary mb-3" role="button"
+           href="agendamentos.html" th:href="@{/agendamento}">
+            <i class="bi bi-calendar3"></i> Agendamentos</a>
+        <a class="btn btn-primary mb-3" role="button"
+           href="editar_config.html" th:href="@{/config}">
+            <i class="bi bi-gear"></i> Configura&ccedil;&otilde;es</a>
     </div>
 
     <h2>Álbuns</h2>

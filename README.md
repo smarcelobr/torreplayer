@@ -57,7 +57,7 @@ O pom.xml tem um plugin para fazer o upload do arquivo jar para o servidor.
 3. Execute o comando no linux (para testes):
 
 ```bash
-java -jar musica.jar
+java -Dspring.profile.active=nave -jar /opt/torreplayer/musica.jar
 ```
 
 

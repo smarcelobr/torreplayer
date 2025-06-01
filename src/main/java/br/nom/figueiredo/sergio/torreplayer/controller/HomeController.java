@@ -33,7 +33,7 @@ public class HomeController {
     public String listAlbums(Model model) {
         List<Album> albums = musicaService.getAllAlbums();
         model.addAttribute("albums", albums);
-        return "index.html";
+        return "index";
     }
 
     @GetMapping(value = "/album/{albumNome}")
@@ -42,7 +42,7 @@ public class HomeController {
         List<Musica> musicas = musicaService.getMusicasPorAlbum(album);
         model.addAttribute("album", album);
         model.addAttribute("musicas", musicas);
-        return "album.html";
+        return "album";
     }
 
     @GetMapping(value = "/album/{albumNome}/{musicaNome}", produces = "audio/mpeg")

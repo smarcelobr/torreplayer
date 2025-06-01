@@ -1,0 +1,44 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head th:replace="~{base :: head}"></head>
+<!--/*@thymesVar id="msg" type="java.lang.String"*/-->
+<!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
+<!--/*@thymesVar id="agendamento" type="br.nom.figueiredo.sergio.torreplayer.model.Agendamento"*/-->
+<body>
+<div class="container">
+    <div th:replace="~{base::top-page}"></div>
+
+    <div class="mb-3">
+        <a class="btn btn-primary" role="button"
+           href="index.html" th:href="@{/}">
+            <i class="bi bi-house-fill"></i> In&iacute;cio</a>
+
+    </div>
+
+    <h2>Excluir agendamento <span th:text="${agendamento.nome}">Toque do meio-dia.</span></h2>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Informações da Música</h5>
+            <p class="card-text">
+                <strong>Álbum:</strong> <span th:text="${agendamento.musica.album.nome}"></span><br>
+                <strong>Música:</strong> <span th:text="${agendamento.musica.nome}"></span>
+            </p>
+        </div>
+    </div>
+    <div>
+        <form method="POST" enctype="multipart/form-data" action="agendamentos.html"
+              th:action="@{/agendamento/{agendamentoId}/exclusao(agendamentoId=${agendamento.id})}">
+
+            <div class="mb-3">
+                <label for="btnExcluir" class="form-label">Confirma a exclusão do agendamento ?</label>
+            </div>
+            <button type="submit" id="btnExcluir" class="btn btn-danger"><i class="bi bi-pencil-square"></i> Excluir</button>
+            <a class="btn btn-primary" role="button"
+               href="agendamentos.html" th:href="@{/agendamento}">
+                <i class="bi bi-box-arrow-left"></i> Cancelar</a>
+
+        </form>
+    </div>
+</div>
+</body>
+</html>
