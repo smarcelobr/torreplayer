@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head th:replace="~{base :: head}"></head>
+<!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
 <!--/*@thymesVar id="msg" type="java.lang.String"*/-->
 <!--/*@thymesVar id="albums" type="java.util.List<br.nom.figueiredo.sergio.torreplayer.model.Album>"*/-->
 <!--/*@thymesVar id="album" type="br.nom.figueiredo.sergio.torreplayer.model.Album"*/-->
@@ -40,7 +41,7 @@
             <a class="btn btn-primary float-end torreEmSilencio" role="button" style="display: none"
                href="/torre/relogio/2QUART.mp3"
                th:href="@{/torre/{albumNome}/{musicaNome}(albumNome=${album.nome},musicaNome=${musica.nome})}">
-                <i class="bi bi-play-circle-fill"></i> Torre</a>
+                <i class="bi bi-play-circle-fill"></i> <span th:text="${cfg.cmdLabel}">Torre</span></a>
 
         </li>
     </ul>

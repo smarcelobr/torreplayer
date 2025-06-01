@@ -18,7 +18,6 @@ import java.nio.file.Paths;
 public class ConfigService {
     private final Logger logger = LoggerFactory.getLogger(ConfigService.class);
 
-
     private final String albumFolder;
 
     private final ObjectMapper om;
@@ -43,6 +42,9 @@ public class ConfigService {
                 // usa configuracoes padrao
                 logger.error("Falha ao ler configuracoes", ex);
             }
+        } else {
+            // salva a primeira versão do arquivo de configurações com valores padrão.
+            saveConfigFile();
         }
     }
 
@@ -64,5 +66,10 @@ public class ConfigService {
 
     public Configuracoes getConfiguracoes() {
         return this.configuracoes;
+    }
+
+    public void setCmdLabel(String cmdLabel) {
+        // altera o label do botão de toque externo
+        this.configuracoes.setCmdLabel(cmdLabel);
     }
 }

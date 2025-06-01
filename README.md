@@ -46,7 +46,7 @@ torre.cmd.stop.mode=KILL_PROCESS
 ./mvnw clean package -DskipTests
 ```
 
-2. Copie para o Raspberry Pi o arquivo `target/torre-player-1.0.0-SNAPSHOT.jar` para a pasta `/opt/torreplayer`.
+2. Copie para o Raspberry Pi o arquivo `target/torre-player-1.0.0-SNAPSHOT.jar` e os scripts para a pasta `/opt/torreplayer`.
 
 O pom.xml tem um plugin para fazer o upload do arquivo jar para o servidor.
 

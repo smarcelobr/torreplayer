@@ -5,6 +5,7 @@ public class Configuracoes {
     private Integer masterVolumeMin = 0;
     private Integer masterVolumeMax = 1000;
     private Integer masterVolume =900;
+    private String cmdLabel = "Externo";
 
     public Integer getMasterVolumeMin() {
         return masterVolumeMin;
@@ -34,5 +35,20 @@ public class Configuracoes {
 
     public void setMasterVolume(Integer masterVolume) {
         this.masterVolume = masterVolume;
+    }
+
+    public void setCmdLabel(String cmdLabel) {
+        this.cmdLabel = cmdLabel;
+    }
+
+    /**
+     * Label do botão de toque externo. Pode ser "Torre" para
+     * indicar que a música será tocada na torre da Igreja ou "Nave"
+     * para indicar que a música será tocada na nave da Igreja.
+     *
+     * @return label do botão de toque externo.
+     */
+    public String getCmdLabel() {
+        return cmdLabel;
     }
 }

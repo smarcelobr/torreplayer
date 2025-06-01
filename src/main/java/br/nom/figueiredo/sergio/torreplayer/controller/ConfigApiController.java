@@ -34,6 +34,10 @@ public class ConfigApiController {
             configService.setVolumePadrao(dto.getMasterVolume());
             salvar=true;
         }
+        if (nonNull(dto.getCmdLabel())) {
+            configService.setCmdLabel(dto.getCmdLabel());
+            salvar=true;
+        }
         if (salvar) {
             configService.saveConfigFile();
         }

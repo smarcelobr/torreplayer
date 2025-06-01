@@ -1,3 +1,4 @@
+<!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
 <!--/*@thymesVar id="msg" type="java.lang.String"*/-->
 <!--/*@thymesVar id="torrePlayerInfo" type="br.nom.figueiredo.sergio.torreplayer.service.TorrePlayerInfo"*/-->
 <!--/*@thymesVar id="album" type="br.nom.figueiredo.sergio.torreplayer.model.Album"*/-->
@@ -27,7 +28,7 @@
         </div>
         <div class="torreEmSilencio" style="display: none" >
             <button class="btn btn-primary" role="button" id="torrePlayButton">
-                <i class="bi bi-play-circle-fill"></i> Torre
+                <i class="bi bi-play-circle-fill"></i> <span th:text="${cfg.cmdLabel}">Torre</span>
             </button>
         </div>
     </div>

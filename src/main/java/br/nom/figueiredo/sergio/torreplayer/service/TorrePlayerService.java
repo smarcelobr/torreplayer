@@ -116,15 +116,12 @@ public class TorrePlayerService {
             LOGGER.debug("Parando a música...");
             if (nonNull(this.info)) {
                 this.info.appendOutput("Parando a música...");
+                this.info.setStatus(TorrePlayerStatus.PARANDO);
             }
             if (stopMode == TorrePlayerStopMode.KILL_PROCESS) {
                 killProcess();
             } else if (stopMode == TorrePlayerStopMode.SEND_KEYS) {
                 sendKeys(this.stopKeys);
-            }
-
-            if (nonNull(this.info)) {
-                this.info.setStatus(TorrePlayerStatus.PARANDO);
             }
         }
     }
@@ -171,14 +168,13 @@ public class TorrePlayerService {
                     result.setExitValue(process.exitValue());
                     if (this.process.exitValue() != 0) {
                         result.setStatus(TorrePlayerStatus.ENCERRADO_ERRO);
-                        result.appendOutput(String.format("%nCódigo de erro: %d", this.process.exitValue()));
+                        result.appendOutput(String.format("%nCódigo de encerramento: %d", this.process.exitValue()));
                     } else {
                         result.setStatus(TorrePlayerStatus.ENCERRADO_SUCESSO);
                         result.appendOutput("Música tocou com sucesso.");
                     }
                 }
                 this.process = null;
-                this.info = null;
             }
         }
 
