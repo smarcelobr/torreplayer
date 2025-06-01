@@ -3,15 +3,17 @@ package br.nom.figueiredo.sergio.torreplayer.controller;
 import br.nom.figueiredo.sergio.torreplayer.model.Album;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
 import br.nom.figueiredo.sergio.torreplayer.service.MusicaService;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -44,20 +46,20 @@ public class HomeController {
     }
 
     @GetMapping(value = "/album/{albumNome}/{musicaNome}", produces = "audio/mpeg")
-    public void downloadMusic(@PathVariable String albumNome,
-                            @PathVariable String musicaNome,
-                            HttpServletResponse response) {
+    public ResponseEntity<byte[]> downloadMusic(@PathVariable String albumNome,
+                                                @PathVariable String musicaNome) {
         Album album = musicaService.getAlbumByNome(albumNome);
         Musica musica = musicaService.getMusicaByNome(album, musicaNome);
         try {
-            // get your file as InputStream
             InputStream is = musicaService.getMusicStream(musica);
-            // copy it to response's OutputStream
-            org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
-            response.flushBuffer();
+            byte[] mediaBytes = IOUtils.toByteArray(is);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("audio/mpeg"))
+                    .body(mediaBytes);
         } catch (IOException ex) {
             logger.info("Error writing file to output stream. Musica was '{}'", musica.getAbsolutePath(), ex);
+            return ResponseEntity.internalServerError().build();
         }
     }
-
 }

@@ -2,7 +2,6 @@ package br.nom.figueiredo.sergio.torreplayer.service;
 
 import br.nom.figueiredo.sergio.torreplayer.exception.MusicaException;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ import static java.util.Objects.nonNull;
 @Service
 public class TorrePlayerService {
 
-    private final Logger logger = LoggerFactory.getLogger(TorrePlayerService.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(TorrePlayerService.class);
     private final ConfigService configService;
 
     @Value("${torre.cmd.play}")
@@ -36,6 +35,16 @@ public class TorrePlayerService {
      */
     @Value("${torre.cmd.stop.keys}")
     private String stopKeys;
+
+    @Value("${torre.cmd.volume.remap.min}")
+    private Integer volumeRemapMin;
+
+    @Value("${torre.cmd.volume.remap.max}")
+    private Integer volumeRemapMax;
+
+    // charset válidos: https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html
+    @Value("${torre.cmd.stdout.charset}")
+    private String charset;
 
     private Process process;
     private TorrePlayerInfo info;
@@ -57,20 +66,40 @@ public class TorrePlayerService {
         ProcessBuilder processBuilder = new ProcessBuilder();
 
         String absolutePath = musica.getAbsolutePath().replace(" ", this.cmdSpaceScape);
+
+        Integer volumeToDevice;
+        if (nonNull(volumeRemapMin) && nonNull(volumeRemapMax) && (volumeRemapMin < volumeRemapMax)) {
+            volumeToDevice = remap(configService.getConfiguracoes().getMasterVolume(),
+                    configService.getConfiguracoes().getMasterVolumeMin(),
+                    configService.getConfiguracoes().getMasterVolumeMax(),
+                    volumeRemapMin, volumeRemapMax);
+        } else {
+            volumeToDevice = configService.getConfiguracoes().getMasterVolume();
+        }
+
         String cmd = cmdPlayTorre
                 .replace("#musicaPath", absolutePath)
-                .replace("#musicaVolume", Integer.toString(configService.getConfiguracoes().getMasterVolume()));
+                .replace("#musicaVolume", Integer.toString(volumeToDevice));
+
         processBuilder.command(cmd.split(","));
 
         try {
             String cmdInfo = String.format("Executing command: %s", cmd.replace(',', ' '));
-            logger.info(cmdInfo);
+            LOGGER.info(cmdInfo);
             processBuilder.redirectErrorStream(true);
             this.process = processBuilder.start();
         } catch (IOException e) {
             throw new MusicaException(String.format("Error writing file to output stream. Musica was '%s'",
                     musica.getAbsolutePath()), e);
         }
+    }
+
+    private static Integer remap(Integer inputValue, Integer inputMin, Integer inputMax,
+                                 Integer outpuMin, Integer outputMax) {
+        if (inputValue == null) {
+            throw new IllegalArgumentException("Input value cannot be null");
+        }
+        return (int) Math.round(((double) (inputValue - inputMin)) / (inputMax - inputMin) * (outputMax - outpuMin) + outpuMin);
     }
 
     /**
@@ -84,7 +113,10 @@ public class TorrePlayerService {
 
     public synchronized void stop() {
         if (this.isTocando()) {
-            logger.debug("Parando a música...");
+            LOGGER.debug("Parando a música...");
+            if (nonNull(this.info)) {
+                this.info.appendOutput("Parando a música...");
+            }
             if (stopMode == TorrePlayerStopMode.KILL_PROCESS) {
                 killProcess();
             } else if (stopMode == TorrePlayerStopMode.SEND_KEYS) {
@@ -99,7 +131,7 @@ public class TorrePlayerService {
 
     private void sendKeys(String keys) {
         try {
-            logger.debug("Enviando teclas '{}'", keys);
+            LOGGER.debug("Enviando teclas '{}'", keys);
             OutputStream out = this.process.getOutputStream();
             out.write(keys.getBytes(StandardCharsets.UTF_8));
             out.flush();
@@ -111,7 +143,7 @@ public class TorrePlayerService {
     }
 
     private void killProcess() {
-        logger.debug("Matando o processo");
+        LOGGER.debug("Matando o processo");
         this.process.destroy();
     }
 
@@ -122,28 +154,33 @@ public class TorrePlayerService {
         } else {
             result = this.info;
         }
-            if (nonNull(process)) {
-                if (process.isAlive()) {
-                    result.setStatus(TorrePlayerStatus.TOCANDO);
-                } else {
-                    if (isNull(result.getExitValue())) {
-                        result.setExitValue(process.exitValue());
-                        try {
-                            result.appendOutput(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8));
-                        } catch (IOException ex) {
-                            logger.debug("Falha ao ler InputStream do player", ex);
-                            result.appendOutput("Não foi possível ler inputstream do do player.\n");
-                        }
-                        if (this.process.exitValue() != 0) {
-                            result.setStatus(TorrePlayerStatus.ENCERRADO_ERRO);
-                            result.appendOutput(String.format("%nExited with error code : %d", this.process.exitValue()));
-                        } else {
-                            result.setStatus(TorrePlayerStatus.ENCERRADO_SUCESSO);
-                            result.appendOutput("Música tocou com sucesso.");
-                        }
+        if (nonNull(process)) {
+            try {
+                byte[] bytes = new byte[process.getInputStream().available()];
+                int lidos = process.getInputStream().read(bytes);
+                if (lidos > 0) {
+                    result.appendOutput(new String(bytes, this.charset));
+                }
+            } catch (IOException ex) {
+                LOGGER.debug("Falha ao ler InputStream do player: {}", ex.getMessage());
+            }
+            if (process.isAlive()) {
+                result.setStatus(TorrePlayerStatus.TOCANDO);
+            } else {
+                if (isNull(result.getExitValue())) {
+                    result.setExitValue(process.exitValue());
+                    if (this.process.exitValue() != 0) {
+                        result.setStatus(TorrePlayerStatus.ENCERRADO_ERRO);
+                        result.appendOutput(String.format("%nCódigo de erro: %d", this.process.exitValue()));
+                    } else {
+                        result.setStatus(TorrePlayerStatus.ENCERRADO_SUCESSO);
+                        result.appendOutput("Música tocou com sucesso.");
                     }
                 }
+                this.process = null;
+                this.info = null;
             }
+        }
 
         return result;
     }

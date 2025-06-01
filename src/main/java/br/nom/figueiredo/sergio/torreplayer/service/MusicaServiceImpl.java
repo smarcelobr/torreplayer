@@ -2,8 +2,12 @@ package br.nom.figueiredo.sergio.torreplayer.service;
 
 import br.nom.figueiredo.sergio.torreplayer.exception.MusicaException;
 import br.nom.figueiredo.sergio.torreplayer.model.Album;
+import br.nom.figueiredo.sergio.torreplayer.model.Arquivo;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
+import br.nom.figueiredo.sergio.torreplayer.model.Playlist;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +29,11 @@ import static java.util.Objects.nonNull;
 @Service
 public class MusicaServiceImpl implements MusicaService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MusicaServiceImpl.class);
+
     @Value(value = "${album.path}")
     private String albumFolder;
+
 
     @Override
     public List<Album> getAllAlbums() {
@@ -42,8 +49,23 @@ public class MusicaServiceImpl implements MusicaService {
     }
 
     @Override
+    public List<Playlist> getAllPlaylists() {
+        try (Stream<Path> stream = Files.list(Paths.get(albumFolder))) {
+            return stream
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().endsWith(".m3u"))
+                    .map(this::playlistFromPath)
+                    .sorted(Comparator.nullsLast(Comparator.comparing(Playlist::getNome)))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new MusicaException("Ao ler pasta", e);
+        }
+    }
+
+    @Override
     public List<Musica> getMusicasPorAlbum(Album album) {
         Path albumPath = toPath(album);
+        LOGGER.debug("Album path: {}", albumPath);
         if (nonNull(albumPath)) {
             try (Stream<Path> stream = Files.list(albumPath)) {
                 return stream
@@ -59,8 +81,32 @@ public class MusicaServiceImpl implements MusicaService {
     }
 
     @Override
+    public List<Musica> getMusicasPorPlaylist(Playlist playlist) {
+        Path playlistPath = toPath(playlist);
+        LOGGER.debug("Playlist path: {}", playlistPath);
+        if (nonNull(playlistPath)) {
+            // abre o arquivo .m3u (playlist) e carrega todas as musicas que lá contem
+            try (Stream<String> stream = Files.lines(playlistPath)) {
+                return stream
+                        .map(String::trim)
+                        .filter(line -> !line.startsWith("#"))
+                        .filter(line -> !line.isEmpty())
+                        .map(Path::of)
+                        .map(this::musicaFromPath)
+                        .sorted(Comparator.nullsLast(Comparator.comparing(Musica::getNome)))
+                        .collect(Collectors.toList());
+            } catch (IOException e) {
+                LOGGER.error("Falha ao ler playlist.", e);
+                return Collections.emptyList();
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
     public Album getAlbumByNome(String albumNome) {
         Path albumPath = Paths.get(albumFolder, albumNome);
+        LOGGER.debug("Album path: {}", albumPath);
         if (Files.exists(albumPath) && Files.isDirectory(albumPath)) {
             return albumFromPath(albumPath);
         }
@@ -79,18 +125,11 @@ public class MusicaServiceImpl implements MusicaService {
         return null;
     }
 
-    private Path toPath(Album album) {
-        if (isNull(album)) {
+    private Path toPath(Arquivo arquivo) {
+        if (isNull(arquivo)) {
             return null;
         }
-        return Paths.get(album.getAbsolutePath());
-    }
-
-    private Path toPath(Musica musica) {
-        if (isNull(musica)) {
-            return null;
-        }
-        return Paths.get(musica.getAbsolutePath());
+        return Paths.get(arquivo.getAbsolutePath());
     }
 
     private Album albumFromPath(Path path) {
@@ -101,6 +140,16 @@ public class MusicaServiceImpl implements MusicaService {
         album.setAbsolutePath(path.toAbsolutePath().toString());
         album.setNome(path.getFileName().toString());
         return album;
+    }
+
+    private Playlist playlistFromPath(Path path) {
+        if (isNull(path)) {
+            return null;
+        }
+        Playlist playlist = new Playlist();
+        playlist.setAbsolutePath(path.toAbsolutePath().toString());
+        playlist.setNome(path.getFileName().toString());
+        return playlist;
     }
 
     private Musica musicaFromPath(Path path) {

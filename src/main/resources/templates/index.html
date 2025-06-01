@@ -18,7 +18,7 @@
     <h2>Álbuns</h2>
     <ul class="list-group">
         <li class="list-group-item" th:each="album : ${albums}">
-            <a href="album.html" th:href="@{/album/{albumNome}/(albumNome=${album.nome})}"><span th:text="${album.nome}">Nome do álbum</span></a>
+            <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${album.nome})}"><span th:text="${album.nome}">Nome do álbum</span></a>
         </li>
     </ul>
 

@@ -1,5 +1,5 @@
 package br.nom.figueiredo.sergio.torreplayer.model;
 
-public class Album extends Arquivo {
+public class Playlist extends Arquivo {
 
 }
