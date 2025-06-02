@@ -125,6 +125,15 @@ public class MusicaServiceImpl implements MusicaService {
         return null;
     }
 
+    @Override
+    public Playlist getPlaylistByNome(String playlistNome) {
+        Path playlistPath = Paths.get(albumFolder, playlistNome);
+        if (Files.exists(playlistPath) && !Files.isDirectory(playlistPath)) {
+            return playlistFromPath(playlistPath);
+        }
+        return null;
+    }
+
     private Path toPath(Arquivo arquivo) {
         if (isNull(arquivo)) {
             return null;
@@ -169,7 +178,7 @@ public class MusicaServiceImpl implements MusicaService {
     public InputStream getMusicStream(Musica musica) {
         try {
             Path musicaPath = toPath(musica);
-            return nonNull(musicaPath)?Files.newInputStream(musicaPath):null;
+            return nonNull(musicaPath) ? Files.newInputStream(musicaPath) : null;
         } catch (IOException e) {
             throw new MusicaException("Falha ao ler musica.", e);
         }
@@ -189,7 +198,7 @@ public class MusicaServiceImpl implements MusicaService {
                 }
                 return musica;
             } else {
-                throw new MusicaException(String.format("Album %s não existe",album.getNome()));
+                throw new MusicaException(String.format("Album %s não existe", album.getNome()));
             }
         } else {
             throw new MusicaException("Album não pode ser nulo");

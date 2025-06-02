@@ -1,8 +1,6 @@
 package br.nom.figueiredo.sergio.torreplayer.controller;
 
-import br.nom.figueiredo.sergio.torreplayer.model.Agendamento;
-import br.nom.figueiredo.sergio.torreplayer.model.Album;
-import br.nom.figueiredo.sergio.torreplayer.model.Musica;
+import br.nom.figueiredo.sergio.torreplayer.model.*;
 import br.nom.figueiredo.sergio.torreplayer.service.AgendamentoService;
 import br.nom.figueiredo.sergio.torreplayer.service.MusicaService;
 import org.springframework.stereotype.Controller;
@@ -30,6 +28,18 @@ public class AgendamentoController {
         return "agendamentos";
     }
 
+    @GetMapping("parar")
+    public String agendamentoDaParada(Model model) {
+
+        AgendamentoParar agendamento = new AgendamentoParar();
+        agendamento.setNome("");
+        agendamento.setCronExpression("");
+        agendamento.setOrdem(this.agendamentoService.getUltimaOrdem() + 1);
+        model.addAttribute("agendamento", agendamento);
+
+        return "editar_agenda_parar";
+    }
+
     @GetMapping("{albumNome}/{musicaNome}")
     public String agendamentoPorMusica(Model model, @PathVariable String albumNome,
                                        @PathVariable String musicaNome) {
@@ -37,7 +47,7 @@ public class AgendamentoController {
         Album album = musicaService.getAlbumByNome(albumNome);
         Musica musica = musicaService.getMusicaByNome(album, musicaNome);
 
-        Agendamento agendamento = new Agendamento();
+        AgendamentoMusica agendamento = new AgendamentoMusica();
         agendamento.setMusica(musica);
         agendamento.setNome("");
         agendamento.setCronExpression("");
@@ -59,35 +69,90 @@ public class AgendamentoController {
     }
 
     @PostMapping("{id:\\d+}")
-    public String salvarAgendamento(Model model, @PathVariable long id,
+    public String salvarAgendamento(@PathVariable long id,
+                                    @RequestParam AgendamentoTipo tipo,
                                     @RequestParam String albumNome,
                                     @RequestParam String musicaNome,
+                                    @RequestParam String playlistNome,
                                     @RequestParam String nome,
                                     @RequestParam String cronExpression,
                                     RedirectAttributes redirectAttributes) {
 
-        Album album = musicaService.getAlbumByNome(albumNome);
-        Musica musica = musicaService.getMusicaByNome(album, musicaNome);
-        Agendamento agendamento;
+        Agendamento agendamento = switch (tipo) {
+            case MUSICA -> salvarAgendamentoMusica(id, albumNome, musicaNome, nome, cronExpression);
+            case PLAYLIST -> salvarAgendamentoPlaylist(id, playlistNome, nome, cronExpression);
+            case PARAR -> salvarAgendamentoParar(id, nome, cronExpression);
+            default -> throw new IllegalArgumentException("Tipo de agendamento não reconhecido");
+        };
 
-        if (id!=0) {
-            agendamento = this.agendamentoService.getAgendamento(id);
-            if (isNull(agendamento)) {
-                throw new AgendamentoNaoEncontradoException(String.format("Agendamento %d não encontrado", id));
-            }
-        } else {
-            agendamento = new Agendamento();
-            agendamento.setOrdem(this.agendamentoService.getUltimaOrdem() + 1);
-        }
-        agendamento.setMusica(musica);
-        agendamento.setNome(nome);
-        agendamento.setCronExpression(cronExpression);
         this.agendamentoService.salvarAgendamento(agendamento);
 
         redirectAttributes.addFlashAttribute("msg",
-                String.format("O agendamento %s foi salvo", nome) );
+                String.format("O agendamento %s foi salvo", nome));
 
         return "redirect:/agendamento";
+    }
+
+    public Agendamento salvarAgendamentoMusica(@PathVariable long id,
+                                               @RequestParam String albumNome,
+                                               @RequestParam String musicaNome,
+                                               @RequestParam String nome,
+                                               @RequestParam String cronExpression) {
+        AgendamentoMusica agendamento;
+        agendamento = getAgendamento(id, nome, cronExpression, new AgendamentoMusicaStrategy());
+
+        Album album = musicaService.getAlbumByNome(albumNome);
+        Musica musica = musicaService.getMusicaByNome(album, musicaNome);
+
+        agendamento.setMusica(musica);
+        return agendamento;
+    }
+
+    public Agendamento salvarAgendamentoPlaylist(@PathVariable long id,
+                                                 @RequestParam String playlistNome,
+                                                 @RequestParam String nome,
+                                                 @RequestParam String cronExpression) {
+        AgendamentoPlaylist agendamento;
+        agendamento = getAgendamento(id, nome, cronExpression, new AgendamentoPlaylistStrategy());
+
+        Playlist playlist = musicaService.getPlaylistByNome(playlistNome);
+
+        agendamento.setPlaylist(playlist);
+        return agendamento;
+    }
+
+    public Agendamento salvarAgendamentoParar(@PathVariable long id,
+                                              @RequestParam String nome,
+                                              @RequestParam String cronExpression) {
+
+        return getAgendamento(id, nome, cronExpression, new AgendamentoPararStrategy());
+    }
+
+    private <T extends Agendamento> T getAgendamento(long id, String nome, String cronExpression,
+                                                     AgendamentoStrategy<T> agendamentoFactory) {
+        T agendamento;
+        if (id != 0) {
+            Agendamento agendamentoSalvo = this.agendamentoService.getAgendamento(id);
+            if (isNull(agendamentoSalvo)) {
+                throw new AgendamentoNaoEncontradoException(String.format("Agendamento %d não encontrado", id));
+            }
+            if (agendamentoFactory.isAssignableFrom(agendamentoSalvo.getClass())) {
+                agendamento = agendamentoService.convertAgendamento(agendamentoSalvo, agendamentoFactory.getTargetClass());
+            } else {
+                // converte o tipo de agendamento salvo para musica
+                agendamento = agendamentoFactory.novaInstancia();
+                agendamento.setId(agendamentoSalvo.getId());
+                agendamento.setOrdem(agendamentoSalvo.getOrdem());
+                agendamento.setNome(agendamentoSalvo.getNome());
+                agendamento.setCronExpression(agendamentoSalvo.getCronExpression());
+            }
+        } else {
+            agendamento = agendamentoFactory.novaInstancia();
+            agendamento.setOrdem(this.agendamentoService.getUltimaOrdem() + 1);
+        }
+        agendamento.setNome(nome);
+        agendamento.setCronExpression(cronExpression);
+        return agendamento;
     }
 
     @GetMapping("{id:\\d+}/exclusao")
@@ -102,8 +167,8 @@ public class AgendamentoController {
     }
 
     @PostMapping("{id:\\d+}/exclusao")
-    public String excluirAgendamento(Model model, @PathVariable long id,
-                                    RedirectAttributes redirectAttributes) {
+    public String excluirAgendamento(@PathVariable long id,
+                                     RedirectAttributes redirectAttributes) {
         Agendamento agendamento;
 
         agendamento = this.agendamentoService.getAgendamento(id);
@@ -113,7 +178,7 @@ public class AgendamentoController {
         this.agendamentoService.removerAgendamento(agendamento);
 
         redirectAttributes.addFlashAttribute("msg",
-                String.format("O agendamento %s foi removido",agendamento.getNome()));
+                String.format("O agendamento %s foi removido", agendamento.getNome()));
 
         return "redirect:/agendamento";
     }

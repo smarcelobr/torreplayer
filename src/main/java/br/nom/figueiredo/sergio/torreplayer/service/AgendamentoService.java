@@ -11,4 +11,20 @@ public interface AgendamentoService {
     void salvarAgendamento(Agendamento scheduledPlayer);
 
     int getUltimaOrdem();
+
+    default <T extends Agendamento> T convertAgendamento(Agendamento agendamento, Class<T> targetClass) {
+        if (agendamento == null) {
+            throw new IllegalArgumentException("Agendamento não pode ser nulo");
+        }
+
+        if (targetClass.isInstance(agendamento)) {
+            return targetClass.cast(agendamento);
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Não é possível converter agendamento do tipo %s para %s",
+                            agendamento.getClass().getSimpleName(),
+                            targetClass.getSimpleName())
+            );
+        }
+    }
 }

@@ -17,20 +17,19 @@
 
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">Informações da Música</h5>
+            <h5 class="card-title">Parar Música</h5>
             <p class="card-text">
-                <strong>Álbum:</strong> <span th:text="${agendamento.musica.album.nome}"></span><br>
-                <strong>Música:</strong> <span th:text="${agendamento.musica.nome}"></span>
+                Programação do horário para parar a música que estiver tocando.
             </p>
         </div>
     </div>
     <div>
         <form method="POST" enctype="multipart/form-data" action=""
               th:action="@{/agendamento/{agendamentoId}(agendamentoId=${agendamento.id})}">
-            <input type="hidden" name="albumNome" th:value="${agendamento.musica.album.nome}">
-            <input type="hidden" name="musicaNome" th:value="${agendamento.musica.nome}">
+            <input type="hidden" name="albumNome" value="">
+            <input type="hidden" name="musicaNome" value="">
             <input type="hidden" name="playlistNome" value="">
-            <input type="hidden" name="tipo" value="MUSICA">
+            <input type="hidden" name="tipo" value="PARAR">
 
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>

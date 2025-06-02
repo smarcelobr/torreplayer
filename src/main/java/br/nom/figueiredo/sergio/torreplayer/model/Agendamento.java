@@ -1,9 +1,21 @@
 package br.nom.figueiredo.sergio.torreplayer.model;
 
-public class Agendamento {
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "tipo")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = AgendamentoMusica.class, name = "MUSICA"),
+        @JsonSubTypes.Type(value = AgendamentoPlaylist.class, name = "PLAYLIST"),
+        @JsonSubTypes.Type(value = AgendamentoAlbum.class, name = "ALBUM"),
+        @JsonSubTypes.Type(value = AgendamentoParar.class, name = "PARAR")
+})
+public abstract class Agendamento {
     private long id = 0L;
     private String nome;
-    private Musica musica;
     private String cronExpression;
     private int ordem;
 
@@ -13,14 +25,6 @@ public class Agendamento {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public Musica getMusica() {
-        return musica;
-    }
-
-    public void setMusica(Musica musica) {
-        this.musica = musica;
     }
 
     public String getCronExpression() {
@@ -46,4 +50,6 @@ public class Agendamento {
     public void setNome(String nome) {
         this.nome = nome;
     }
+
+    public abstract AgendamentoTipo getTipo();
 }

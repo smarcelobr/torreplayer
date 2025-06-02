@@ -23,4 +23,6 @@ public interface MusicaService {
     Album postAlbum(String albumNome);
 
     Album alterarNomeAlbum(String albumNome, String novoNome);
+
+    Playlist getPlaylistByNome(String playlistNome);
 }

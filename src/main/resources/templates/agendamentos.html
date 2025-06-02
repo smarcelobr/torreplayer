@@ -3,7 +3,7 @@
 <head th:replace="~{base :: head}"></head>
 <!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
 <!--/*@thymesVar id="msg" type="java.lang.String"*/-->
-<!--/*@thymesVar id="agendamentos" type="java.util.List<br.nom.figueiredo.sergio.torreplayer.model.Agendamento>"*/-->
+<!--/*@thymesVar id="agendamentos" type="java.util.List<br.nom.figueiredo.sergio.torreplayer.model.AgendamentoMusica>"*/-->
 <body>
 <div class="container">
 
@@ -20,7 +20,7 @@
         <li class="list-group-item" th:each="agendamento : ${agendamentos}">
             <span th:text="${agendamento.nome}">Nome do agendamento</span>
 
-
+            <div class="float-end">
             <a class="btn btn-primary" role="button"
                href="/editar_agenda"
                th:href="@{/agendamento/{agendamentoId}(agendamentoId=${agendamento.id})}">
@@ -31,6 +31,7 @@
                href="/excluir_agenda"
                th:href="@{/agendamento/{agendamentoId}/exclusao(agendamentoId=${agendamento.id})}">
                 <i class="bi bi-trash"></i> Remover</a>
+            </div>
         </li>
     </ul>
 
