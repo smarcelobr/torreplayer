@@ -21,23 +21,24 @@
             <span th:text="${agendamento.nome}">Nome do agendamento</span>
 
             <div class="float-end">
-            <a class="btn btn-primary" role="button"
-               href="/editar_agenda"
-               th:href="@{/agendamento/{agendamentoId}(agendamentoId=${agendamento.id})}">
-                <i class="bi bi-pencil-square"></i> Alterar</a>
+                <a class="btn btn-primary" role="button"
+                   href="/editar_agenda"
+                   th:href="@{/agendamento/{agendamentoId}(agendamentoId=${agendamento.id})}">
+                    <i class="bi bi-pencil-square"></i> Alterar</a>
 
-            <!-- Button trigger modal delete confirmation -->
-            <a class="btn btn-primary" role="button"
-               href="/excluir_agenda"
-               th:href="@{/agendamento/{agendamentoId}/exclusao(agendamentoId=${agendamento.id})}">
-                <i class="bi bi-trash"></i> Remover</a>
+                <!-- Button trigger modal delete confirmation -->
+                <a class="btn btn-primary" role="button"
+                   href="/excluir_agenda"
+                   th:href="@{/agendamento/{agendamentoId}/exclusao(agendamentoId=${agendamento.id})}">
+                    <i class="bi bi-trash"></i> Remover</a>
             </div>
         </li>
     </ul>
 
-    <div th:if="${#lists.isEmpty(musicas)}">
+    <div th:if="${agendamentos.isEmpty()}">
         Não há agendamentos.
     </div>
+
 </div>
 <div th:replace="~{base:: scripts}"></div>
 
