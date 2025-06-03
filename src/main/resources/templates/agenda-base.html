@@ -24,7 +24,7 @@
                 </label>
             </div>
 
-            <div id="checkboxesMinutos" style="display:none">
+            <div id="checkboxesMinutos" class="agenda-checkboxes-hidden">
                 <div class="form-check">
                     <input class="form-check-input minuto" type="checkbox" value="0" id="min00">
                     <label class="form-check-label" for="min00">00</label>
@@ -65,7 +65,7 @@
                 </label>
             </div>
 
-            <div id="checkboxesHoras" style="display:none">
+            <div id="checkboxesHoras" class="agenda-checkboxes-hidden">
                 <div th:each="hora : ${#numbers.sequence(0,23)}" class="form-check">
                     <input class="form-check-input hora" type="checkbox" th:value="${hora}"
                            th:id="'hora' + ${hora}">
@@ -96,7 +96,7 @@
                 </label>
             </div>
 
-            <div id="checkboxesDiasMes" style="display:none">
+            <div id="checkboxesDiasMes" class="agenda-checkboxes-hidden">
                 <div th:each="dia : ${#numbers.sequence(1,31)}" class="form-check">
                     <input class="form-check-input dia-mes" type="checkbox" th:value="${dia}"
                            th:id="'dia' + ${dia}">
@@ -128,7 +128,7 @@
                 </label>
             </div>
 
-            <div id="checkboxesMeses" style="display:none">
+            <div id="checkboxesMeses" class="agenda-checkboxes-hidden">
                 <div class="form-check">
                     <input class="form-check-input mes" type="checkbox" value="1" id="janeiro">
                     <label class="form-check-label" for="janeiro">Janeiro</label>
@@ -202,7 +202,7 @@
                 </label>
             </div>
 
-            <div id="checkboxesDiasSemana" style="display:none">
+            <div id="checkboxesDiasSemana" class="agenda-checkboxes-hidden">
                 <div class="form-check">
                     <input class="form-check-input dia-semana" type="checkbox" value="0" id="domingo">
                     <label class="form-check-label" for="domingo">Domingo</label>

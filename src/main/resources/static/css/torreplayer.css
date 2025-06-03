@@ -18,3 +18,18 @@
 a {
   text-decoration: none;
 }
+
+.agenda-checkboxes-show {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    gap: 0 1.5em;
+}
+
+/*.agenda-checkboxes-show > div {*/
+/*    padding: 0 0.5em;*/
+/*}*/
+
+.agenda-checkboxes-hidden {
+    display: none;
+}

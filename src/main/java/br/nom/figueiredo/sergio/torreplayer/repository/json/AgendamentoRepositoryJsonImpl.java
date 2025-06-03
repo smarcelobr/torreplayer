@@ -137,5 +137,4 @@ public class AgendamentoRepositoryJsonImpl implements AgendamentoRepository {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-
 }

@@ -2,10 +2,12 @@ function toggleMinutos() {
     var checkboxes = document.getElementById('checkboxesMinutos');
     var hidden = document.getElementById('minutosHidden');
     if (document.getElementById('todosMinutos').checked) {
-        checkboxes.style.display = 'none';
+        checkboxes.classList.remove("agenda-checkboxes-show");
+        checkboxes.classList.add("agenda-checkboxes-hidden");
         hidden.value = '*';
     } else {
-        checkboxes.style.display = 'block';
+        checkboxes.classList.remove("agenda-checkboxes-hidden");
+        checkboxes.classList.add("agenda-checkboxes-show");
         updateMinutos();
     }
 }
@@ -14,10 +16,12 @@ function toggleHoras() {
     var checkboxes = document.getElementById('checkboxesHoras');
     var hidden = document.getElementById('horasHidden');
     if (document.getElementById('todasHoras').checked) {
-        checkboxes.style.display = 'none';
+        checkboxes.classList.remove("agenda-checkboxes-show");
+        checkboxes.classList.add("agenda-checkboxes-hidden");
         hidden.value = '*';
     } else {
-        checkboxes.style.display = 'block';
+        checkboxes.classList.remove("agenda-checkboxes-hidden");
+        checkboxes.classList.add("agenda-checkboxes-show");
         updateHoras();
     }
 }
@@ -26,10 +30,12 @@ function toggleDiasMes() {
     var checkboxes = document.getElementById('checkboxesDiasMes');
     var hidden = document.getElementById('diasMesHidden');
     if (document.getElementById('todosDiasMes').checked) {
-        checkboxes.style.display = 'none';
+        checkboxes.classList.remove("agenda-checkboxes-show");
+        checkboxes.classList.add("agenda-checkboxes-hidden");
         hidden.value = '*';
     } else {
-        checkboxes.style.display = 'block';
+        checkboxes.classList.remove("agenda-checkboxes-hidden");
+        checkboxes.classList.add("agenda-checkboxes-show");
         updateDiasMes();
     }
 }
@@ -38,10 +44,12 @@ function toggleDiasSemana() {
     var checkboxes = document.getElementById('checkboxesDiasSemana');
     var hidden = document.getElementById('diasSemanaHidden');
     if (document.getElementById('todosDias').checked) {
-        checkboxes.style.display = 'none';
+        checkboxes.classList.remove("agenda-checkboxes-show");
+        checkboxes.classList.add("agenda-checkboxes-hidden");
         hidden.value = '*';
     } else {
-        checkboxes.style.display = 'block';
+        checkboxes.classList.remove("agenda-checkboxes-hidden");
+        checkboxes.classList.add("agenda-checkboxes-show");
         updateDiasSemana();
     }
 }
@@ -50,10 +58,12 @@ function toggleMeses() {
     var checkboxes = document.getElementById('checkboxesMeses');
     var hidden = document.getElementById('mesesHidden');
     if (document.getElementById('todosMeses').checked) {
-        checkboxes.style.display = 'none';
+        checkboxes.classList.remove("agenda-checkboxes-show");
+        checkboxes.classList.add("agenda-checkboxes-hidden");
         hidden.value = '*';
     } else {
-        checkboxes.style.display = 'block';
+        checkboxes.classList.remove("agenda-checkboxes-hidden");
+        checkboxes.classList.add("agenda-checkboxes-show");
         updateMeses();
     }
 }
@@ -131,7 +141,6 @@ function carregarCronExpression() {
             const checkbox = document.getElementById('min' + min.padStart(2, '0'));
             if (checkbox) checkbox.checked = true;
         });
-        toggleMinutos();
     }
 
     // Configura horas
@@ -142,7 +151,6 @@ function carregarCronExpression() {
             const checkbox = document.getElementById('hora' + hora);
             if (checkbox) checkbox.checked = true;
         });
-        toggleHoras();
     }
 
     // Configura dias do mês
@@ -153,7 +161,6 @@ function carregarCronExpression() {
             const checkbox = document.getElementById('dia' + dia);
             if (checkbox) checkbox.checked = true;
         });
-        toggleDiasMes();
     }
 
     // Configura meses
@@ -203,7 +210,6 @@ function carregarCronExpression() {
             const checkbox = document.getElementById(mesId);
             if (checkbox) checkbox.checked = true;
         });
-        toggleMeses();
     }
 
     // Configura dias da semana
@@ -238,8 +244,14 @@ function carregarCronExpression() {
             const checkbox = document.getElementById(diaId);
             if (checkbox) checkbox.checked = true;
         });
-        toggleDiasSemana();
     }
+
+    toggleMinutos();
+    toggleHoras();
+    toggleDiasMes();
+    toggleMeses();
+    toggleDiasSemana();
+
 }
 
 // Executa quando a página carregar
