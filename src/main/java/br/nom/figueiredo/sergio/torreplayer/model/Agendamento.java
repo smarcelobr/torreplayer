@@ -1,23 +1,11 @@
 package br.nom.figueiredo.sergio.torreplayer.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "tipo")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = AgendamentoMusica.class, name = "MUSICA"),
-        @JsonSubTypes.Type(value = AgendamentoPlaylist.class, name = "PLAYLIST"),
-        @JsonSubTypes.Type(value = AgendamentoAlbum.class, name = "ALBUM"),
-        @JsonSubTypes.Type(value = AgendamentoParar.class, name = "PARAR")
-})
 public abstract class Agendamento {
     private long id = 0L;
     private String nome;
     private String cronExpression;
     private int ordem;
+    private boolean ativo;
 
     public long getId() {
         return id;
@@ -52,4 +40,12 @@ public abstract class Agendamento {
     }
 
     public abstract AgendamentoTipo getTipo();
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
 }

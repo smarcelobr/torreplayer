@@ -1,55 +1,22 @@
 package br.nom.figueiredo.sergio.torreplayer.service;
 
 import br.nom.figueiredo.sergio.torreplayer.model.Agendamento;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
+import br.nom.figueiredo.sergio.torreplayer.repository.AgendamentoRepository;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Service
 public class AgendamentoServiceImpl implements AgendamentoService {
 
+    private final AgendamentoRepository repository;
     private final List<Agendamento> agendamentoList;
-    private final File jsonFile;
-    private final ObjectMapper objectMapper;
 
-    public AgendamentoServiceImpl(@Value("${album.path}") String albumPath) {
-        Path albumPathObj = Path.of(albumPath);
-        this.jsonFile = albumPathObj.resolve("agendamentos.json").toFile();
-        this.objectMapper = new ObjectMapper();
+    public AgendamentoServiceImpl(AgendamentoRepository repository) {
+        this.repository = repository;
 
-        agendamentoList = lerListaJson();
-    }
-
-    private List<Agendamento> lerListaJson() {
-        final List<Agendamento> scheduleList;
-        ArrayList<Agendamento> lista;
-        if (jsonFile.exists()) {
-            try {
-                lista = objectMapper.readValue(jsonFile, new TypeReference<ArrayList<Agendamento>>() {});
-
-            } catch (IOException e) {
-                throw new RuntimeException("Error reading agendamentos.json", e);
-            }
-        } else {
-            lista = new ArrayList<>();
-        }
-        return lista;
-    }
-
-    private void persistirLista() {
-        try {
-            objectMapper.writeValue(jsonFile, agendamentoList);
-        } catch (IOException e) {
-            throw new RuntimeException("Error creating agendamentos.json", e);
-        }
+        agendamentoList = repository.findAll();
     }
 
     @Override
@@ -68,7 +35,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Override
     public void removerAgendamento(Agendamento agendamento) {
         agendamentoList.removeIf(a -> a.getId() == agendamento.getId());
-        persistirLista();
+        repository.salvarLista(agendamentoList);
     }
 
     @Override
@@ -86,7 +53,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         // se o agendamento com este id não existir, inclui. Caso contrário, atualiza.
         agendamentoList.removeIf(a -> a.getId() == agendamento.getId());
         agendamentoList.add(agendamento);
-        persistirLista();
+        repository.salvarLista(agendamentoList);
     }
 
     @Override

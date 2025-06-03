@@ -1,4 +1,5 @@
-<html xmlns:th="https://www.thymeleaf.org">
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="pt">
 <head th:replace="~{base :: head}"></head>
 <!--/*@thymesVar id="msg" type="java.lang.String"*/-->
 <!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
@@ -38,15 +39,16 @@
                 <div id="nomeHelp" class="form-text">Nome do agendamento.</div>
             </div>
 
-            <div class="mb-3">
-                <label for="cronExpression" class="form-label">Cron</label>
-                <input type="text" class="form-control" id="cronExpression" name="cronExpression" aria-describedby="cronHelp" size="28"
-                th:value="${agendamento.cronExpression}">
-                <div id="cronHelp" class="form-text">Expressão cron.</div>
-            </div>
-            <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Salvar</button>
+            <div class="mb-3"></div>
+
+            <button type="submit" class="btn btn-primary" onclick="montarCronExpression()"><i
+                    class="bi bi-pencil-square"></i> Salvar
+            </button>
+
         </form>
     </div>
 </div>
+<div th:replace="~{base:: scripts}"></div>
+<script src="/static/js/agendamento.js" th:src="@{/js/agendamento.js(c=${@cachePreventNumber})}" ></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
-<html xmlns:th="https://www.thymeleaf.org">
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="pt">
 <head th:replace="~{base :: head}"></head>
 <!--/*@thymesVar id="msg" type="java.lang.String"*/-->
 <!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
@@ -27,5 +28,6 @@
         </form>
     </div>
 </div>
+<div th:replace="~{base:: scripts}"></div>
 </body>
 </html>

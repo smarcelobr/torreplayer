@@ -3,6 +3,7 @@ package br.nom.figueiredo.sergio.torreplayer.controller;
 import br.nom.figueiredo.sergio.torreplayer.model.*;
 import br.nom.figueiredo.sergio.torreplayer.service.AgendamentoService;
 import br.nom.figueiredo.sergio.torreplayer.service.MusicaService;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -77,6 +78,7 @@ public class AgendamentoController {
                                     @RequestParam String nome,
                                     @RequestParam String cronExpression,
                                     RedirectAttributes redirectAttributes) {
+        validarCronExpression(cronExpression);
 
         Agendamento agendamento = switch (tipo) {
             case MUSICA -> salvarAgendamentoMusica(id, albumNome, musicaNome, nome, cronExpression);
@@ -126,6 +128,12 @@ public class AgendamentoController {
                                               @RequestParam String cronExpression) {
 
         return getAgendamento(id, nome, cronExpression, new AgendamentoPararStrategy());
+    }
+
+    private void validarCronExpression(String cronExpression) {
+        if (!CronExpression.isValidExpression(cronExpression)) {
+            throw new IllegalArgumentException("Expressão cron inválida: " + cronExpression);
+        }
     }
 
     private <T extends Agendamento> T getAgendamento(long id, String nome, String cronExpression,
