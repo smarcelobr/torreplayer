@@ -60,5 +60,96 @@ O pom.xml tem um plugin para fazer o upload do arquivo jar para o servidor.
 java -Dspring.profile.active=nave -jar /opt/torreplayer/musica.jar
 ```
 
+## App as a Service no Raspberry Pi
+
+    Cria grupo 
+    $ sudo groupadd appjava
+    Cria usuário (system) sem login e nem home
+    $ sudo adduser appmusica --system
+    Adiciona o usuário ao grupo.
+    $ sudo adduser appmusica appjava
+    $ sudo adduser <seu_user> appjava
+
+Criar arquivo `/etc/sudoers.d/030_musica`:
+```
+appmusica       ALL=(ALL)       NOPASSWD: ALL
+```
+
+### MUSICA EM /OPT
+
+```
+$ sudo mkdir /opt/torreplayer
+$ sudo chown appmusica:appjava /opt/torreplayer
+```
+
+Script `/opt/torreplayer/start.sh` bash para iniciar o java:
+
+``` 
+#!/bin/bash
+
+echo INICIANDO MUSICA
+
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk-armhf
+WORKDIR=/opt/torreplayer
+JAVA_OPTIONS=" -Xms512m -Xmx768m -server -Dspring.profiles.active=nave"
+# APP_OPTIONS=" -c /path/to/app.config -d /path/to/datadir "
+APP_OPTIONS=""
+
+cd $WORKDIR || exit
+"${JAVA_HOME}/bin/java" $JAVA_OPTIONS -jar musica.jar $APP_OPTIONS
+```
+
+Dê permissão de execução ao script:
+```
+$ sudo chmod a+x /opt/torreplayer/start.sh
+```
+
+### MUSICA AS A LINUX SERVICE
+
+Configurado no systemd para iniciar automaticamente ao iniciar o raspberry:
+(ref.: https://www.baeldung.com/linux/run-java-application-as-service)
+(ref.: https://www.auroria.io/spring-boot-as-systemd-service/)
+
+Crie o arquivo `/etc/systemd/system/musica.service`:
+```
+[Unit]
+Description=MUSICA
+After=syslog.target network.target
+
+[Service]
+SuccessExitStatus=143
+
+User=appmusica
+Group=appjava
+
+Type=forking
+
+ExecStart=/opt/torreplayer/start.sh
+ExecStop=/bin/kill -15 $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Depois que colocar o 'musica.service' na pasta, registre-o:
+
+    $ sudo systemctl daemon-reload
+
+Pode startar e stopar agora:
+
+    $ sudo systemctl start musica.service
+    $ sudo systemctl status musica.service
+    $ sudo systemctl stop musica.service
+    $ sudo systemctl status musica.service
+
+para ver o log:
+
+    $ journalctl -xeu musica.service -f
+
+
+para iniciar sempre que for ligado:
+
+    $ sudo systemctl enable musica.service
+
 
 
