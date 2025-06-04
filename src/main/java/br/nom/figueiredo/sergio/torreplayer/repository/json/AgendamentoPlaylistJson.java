@@ -4,6 +4,7 @@ import br.nom.figueiredo.sergio.torreplayer.model.AgendamentoTipo;
 
 public class AgendamentoPlaylistJson extends AgendamentoJson {
     private String playlistNome;
+    private boolean random;
 
     public String getPlaylistNome() {
         return playlistNome;
@@ -16,5 +17,13 @@ public class AgendamentoPlaylistJson extends AgendamentoJson {
     @Override
     public AgendamentoTipo getTipo() {
         return AgendamentoTipo.PLAYLIST;
+    }
+
+    public boolean isRandom() {
+        return random;
+    }
+
+    public void setRandom(boolean random) {
+        this.random = random;
     }
 }

@@ -16,7 +16,7 @@
 
     <h2>Editar Agendamento <span th:text="${agendamento.id == 0} ? 'Novo' : '#'+${agendamento.id}"></span></h2>
 
-    <div class="form-switch mb-3">
+    <div class="form-switch mb-3" th:if="${agendamento.id!=0}">
         <input class="form-check-input" type="checkbox" role="switch"
                id="ativo" name="ativo" th:data-agendamento-id="${agendamento.id}"
                th:checked="${agendamento.ativo}"
@@ -26,12 +26,22 @@
 
     <div class="card mb-3" th:if="${agendamento.tipo.name() == 'MUSICA'}">
         <div class="card-body">
-            <h5 class="card-title">Informações da Música</h5>
+            <h5 class="card-title">Informações da M&uacute;sica</h5>
             <p class="card-text">
-                <strong>Álbum:</strong>
+                <strong>&Aacute;lbum:</strong>
                 <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${agendamento.musica.album.nome})}">
-                    <span th:text="${agendamento.musica.album.nome}">Nome do álbum</span></a><br>
+                    <span th:text="${agendamento.musica.album.nome}">Nome do &aacute;lbum</span></a><br>
                 <strong>Música:</strong> <span th:text="${agendamento.musica.nome}"></span>
+            </p>
+        </div>
+    </div>
+    <div class="card mb-3" th:if="${agendamento.tipo.name() == 'ALBUM'}">
+        <div class="card-body">
+            <h5 class="card-title">Informações do &Aacute;lbum</h5>
+            <p class="card-text">
+                <strong>&Aacute;lbum:</strong>
+                <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${agendamento.album.nome})}">
+                    <span th:text="${agendamento.album.nome}">Nome do &aacute;lbum</span></a><br>
             </p>
         </div>
     </div>
@@ -48,11 +58,14 @@
         <form method="POST" enctype="multipart/form-data" action=""
               th:action="@{/agendamento/{agendamentoId}(agendamentoId=${agendamento.id})}">
             <input type="hidden" name="tipo" th:value="${agendamento.tipo}">
+            <input type="hidden" name="albumNome" th:value="${agendamento.album.nome}"
+                   th:if="${agendamento.tipo.name()=='ALBUM'}">
             <input type="hidden" name="albumNome" th:value="${agendamento.musica.album.nome}"
-                   th:if="${agendamento.tipo.name()=='MUSICA' || agendamento.tipo.name()=='ALBUM'}">
+                   th:if="${agendamento.tipo.name()=='MUSICA'}">
             <input type="hidden" name="musicaNome" th:value="${agendamento.musica.nome}"
                    th:if="${agendamento.tipo.name()=='MUSICA'}">
-            <input type="hidden" name="playlistNome" value="">
+            <input type="hidden" name="playlistNome" th:value="${agendamento.playlist.nome}"
+                   th:if="${agendamento.tipo.name()=='PLAYLIST'}">
             <input type="hidden" id="cronExpression" name="cronExpression">
             <input type="hidden" id="originalCronExpression" name="originalCronExpression"
                    th:value="${agendamento.cronExpression}">
@@ -62,6 +75,14 @@
                 <input type="text" class="form-control" id="nome" name="nome" aria-describedby="nomeHelp" size="28"
                        th:value="${agendamento.nome}">
                 <div id="nomeHelp" class="form-text">Nome do agendamento.</div>
+            </div>
+
+            <div class="form-switch mb-3"
+                 th:if="${agendamento.tipo.name()=='ALBUM' || agendamento.tipo.name()=='PLAYLIST'}">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       id="random" name="random"
+                       th:checked="${agendamento.random}">
+                <label class="form-check-label" for="random">Aleatório</label>
             </div>
 
             <div th:replace="~{agenda-base::form}" class="mb-3"></div>

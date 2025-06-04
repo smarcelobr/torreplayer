@@ -4,6 +4,7 @@ import br.nom.figueiredo.sergio.torreplayer.model.AgendamentoTipo;
 
 public class AgendamentoAlbumJson extends AgendamentoJson {
     private String albumNome;
+    private boolean random;
 
     @Override
     public AgendamentoTipo getTipo() {
@@ -16,5 +17,13 @@ public class AgendamentoAlbumJson extends AgendamentoJson {
 
     public void setAlbumNome(String albumNome) {
         this.albumNome = albumNome;
+    }
+
+    public boolean isRandom() {
+        return random;
+    }
+
+    public void setRandom(boolean random) {
+        this.random = random;
     }
 }

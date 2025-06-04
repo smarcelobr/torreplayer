@@ -302,21 +302,6 @@ function getProximoEvento(agendamentoId) {
              */
             return response.json();
         })
-        .then(data => {
-            if (data && data.length > 0) {
-                const evento = new Date(data[0].evento);
-                const formatada = evento.toLocaleString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-                return formatada;
-            }
-            return 'Não há eventos programados';
-        })
 }
 
 // Adicione esta função no final do arquivo agendamento.js
@@ -324,6 +309,21 @@ function carregarProximosEventos() {
     document.querySelectorAll('[id^="proximo-evento-"]').forEach(element => {
         const agendamentoId = element.id.replace('proximo-evento-', '');
         getProximoEvento(agendamentoId)
+            .then(data => {
+                if (data && data.length > 0) {
+                    const evento = new Date(data[0].evento);
+                    const formatada = evento.toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    return formatada;
+                }
+                return 'Não há eventos programados';
+            })
             .then(data => {
                 element.textContent = data;
             })

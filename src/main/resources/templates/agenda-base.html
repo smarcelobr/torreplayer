@@ -9,7 +9,7 @@
             <label class="form-label">Minutos</label>
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="tipoMinutos" id="todosMinutos"
-                       value="todos" checked
+                       value="todos" disabled
                        onchange="toggleMinutos()">
                 <label class="form-check-label" for="todosMinutos">
                     Todos
@@ -17,7 +17,7 @@
             </div>
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="tipoMinutos" id="minutosEspecificos"
-                       value="especificos"
+                       value="especificos" checked
                        onchange="toggleMinutos()">
                 <label class="form-check-label" for="minutosEspecificos">
                     Selecionar Minutos
@@ -25,21 +25,12 @@
             </div>
 
             <div id="checkboxesMinutos" class="agenda-checkboxes-hidden">
-                <div class="form-check">
-                    <input class="form-check-input minuto" type="checkbox" value="0" id="min00">
-                    <label class="form-check-label" for="min00">00</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input minuto" type="checkbox" value="15" id="min15">
-                    <label class="form-check-label" for="min15">15</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input minuto" type="checkbox" value="30" id="min30">
-                    <label class="form-check-label" for="min30">30</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input minuto" type="checkbox" value="45" id="min45">
-                    <label class="form-check-label" for="min45">45</label>
+                <div th:each="minuto : ${#numbers.sequence(0,59)}" class="form-check" th:if="${minuto % 5 == 0}">
+                    <input class="form-check-input minuto" type="checkbox" th:value="${minuto}"
+                           th:id="'min' + ${#numbers.formatInteger(minuto,2)}"
+                           th:name="'min' + ${#numbers.formatInteger(minuto,2)}" >
+                    <label class="form-check-label" th:for="'min' + ${#numbers.formatInteger(minuto,2)}"
+                           th:text="${#numbers.formatInteger(minuto,2)}">00</label>
                 </div>
             </div>
         </div>

@@ -25,6 +25,11 @@
     <ul class="list-group">
         <li class="list-group-item" th:each="album : ${albums}">
             <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${album.nome})}"><span th:text="${album.nome}">Nome do álbum</span></a>
+
+            <a class="btn btn-primary float-end" role="button"
+               href="/agendamento/canto_gregoriano/01 canto.mp3"
+               th:href="@{/agendamento/album/{albumNome}(albumNome=${album.nome})}">
+                <i class="bi bi-calendar-plus"></i> Agendar</a>
         </li>
     </ul>
 
