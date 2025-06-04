@@ -1,6 +1,6 @@
 package br.nom.figueiredo.sergio.torreplayer.model;
 
-public class Arquivo {
+public abstract class Arquivo {
     private String absolutePath;
     private String nome;
 
@@ -19,4 +19,6 @@ public class Arquivo {
     public void setNome(String nome) {
         this.nome = nome;
     }
+
+    public abstract TipoMidia getTipo();
 }

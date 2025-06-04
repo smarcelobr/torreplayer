@@ -9,6 +9,8 @@ import br.nom.figueiredo.sergio.torreplayer.service.TorrePlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import static java.util.Objects.nonNull;
+
 @RestController
 @RequestMapping("api/torre")
 public class TorrePlayerApiController {
@@ -30,8 +32,12 @@ public class TorrePlayerApiController {
     @PostMapping(value = "play")
     public TorrePlayerInfo play(@RequestBody AlbumMusicaDTO dto) {
         Album album = musicaService.getAlbumByNome(dto.getAlbumNome());
-        Musica musica = musicaService.getMusicaByNome(album, dto.getMusicaNome());
-        torrePlayerService.tocar(musica);
+        if (nonNull(dto.getMusicaNome())) {
+            Musica musica = musicaService.getMusicaByNome(album, dto.getMusicaNome());
+            torrePlayerService.tocar(musica);
+        } else {
+            torrePlayerService.tocar(album, false);
+        }
 
         return torrePlayerService.getInfo();
     }

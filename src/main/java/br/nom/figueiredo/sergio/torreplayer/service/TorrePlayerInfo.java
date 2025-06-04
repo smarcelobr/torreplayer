@@ -1,22 +1,22 @@
 package br.nom.figueiredo.sergio.torreplayer.service;
 
-import br.nom.figueiredo.sergio.torreplayer.model.Musica;
+import br.nom.figueiredo.sergio.torreplayer.model.Arquivo;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
 public class TorrePlayerInfo {
-    private Musica musica;
+    private Arquivo arquivo;
     private Integer exitValue;
     private String output = StringUtils.EMPTY;
     private TorrePlayerStatus status = TorrePlayerStatus.INDEFINIDO;
 
-    public Musica getMusica() {
-        return musica;
+    public Arquivo getArquivo() {
+        return arquivo;
     }
 
-    public void setMusica(Musica musica) {
-        this.musica = Objects.requireNonNull(musica);
+    public void setArquivo(Arquivo path) {
+        this.arquivo = Objects.requireNonNull(path);
     }
 
     public Integer getExitValue() {

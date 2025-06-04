@@ -2,13 +2,13 @@ function infoUpdated(info) {
     if (!info) {
         info = {status:"INDEFINIDO"};
     }
-    if (!info.musica) {
-        info.musica = {nome: ""};
+    if (!info.arquivo) {
+        info.arquivo = {nome: ""};
     }
 
     const torreMusicaNome = document.getElementsByClassName("torreMusicaNome");
     Array.from(torreMusicaNome)
-        .forEach((element) => element.innerText = info.musica.nome || "");
+        .forEach((element) => element.innerText = info.arquivo.nome || "");
 
     const mostrarQdoTocando = document.getElementsByClassName("torreTocando");
     Array.from(mostrarQdoTocando)
@@ -25,11 +25,17 @@ function infoUpdated(info) {
 
     const torrePlayButton = document.getElementById("torrePlayButton");
     if (torrePlayButton) {
-        torrePlayButton.style.display = (info.status!=="TOCANTO" && info.musica.nome)?
+        torrePlayButton.style.display = (info.status!=="TOCANDO" && info.arquivo.nome)?
             "block":"none";
-        if (info.musica) {
-            torrePlayButton.onclick = function (ev) {
-                torrePlay(info.musica.album.nome, info.musica.nome);
+        if (info.arquivo) {
+            if (info.arquivo.tipo === 'MUSICA') {
+                torrePlayButton.onclick = function (ev) {
+                    torrePlay(info.arquivo.album.nome, info.arquivo.nome);
+                }
+            } else if (info.arquivo.tipo === 'ALBUM') {
+                torrePlayButton.onclick = function (ev) {
+                    torrePlayAlbum(info.arquivo.nome);
+                }
             }
         }
     }
@@ -73,6 +79,18 @@ function torrePlay(albumNome, musicaNome) {
     xhr.onload = xhrInfoOnLoad;
 
     const req = {albumNome: albumNome, musicaNome: musicaNome};
+
+    xhr.send(JSON.stringify(req));
+}
+
+function torrePlayAlbum(albumNome) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", URL.apiTorrePlay, true);
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onload = xhrInfoOnLoad;
+
+    const req = {albumNome: albumNome};
 
     xhr.send(JSON.stringify(req));
 }

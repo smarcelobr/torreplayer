@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("torre")
@@ -32,6 +33,16 @@ public class TorrePlayerController {
         Album album = musicaService.getAlbumByNome(albumNome);
         Musica musica = musicaService.getMusicaByNome(album, musicaNome);
         torrePlayerService.tocar(musica);
+
+        return "redirect:/torre/info";
+    }
+
+    @GetMapping(value = "album/{albumNome}")
+    public String playTorre(@PathVariable String albumNome,
+                            @RequestParam(required = false, defaultValue = "false") Boolean random) {
+
+        Album album = musicaService.getAlbumByNome(albumNome);
+        torrePlayerService.tocar(album, random);
 
         return "redirect:/torre/info";
     }

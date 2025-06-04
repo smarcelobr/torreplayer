@@ -1,7 +1,10 @@
 package br.nom.figueiredo.sergio.torreplayer.service;
 
 import br.nom.figueiredo.sergio.torreplayer.exception.MusicaException;
+import br.nom.figueiredo.sergio.torreplayer.model.Album;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
+import br.nom.figueiredo.sergio.torreplayer.model.Playlist;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,15 +61,43 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
     public synchronized void tocar(Musica musica) {
 
         if (this.isTocando()) {
-            throw new MusicaException("Já tem música tocando...");
+            throw new MusicaException("Som está ocupado tocando...");
         }
         this.info = new TorrePlayerInfo();
-        this.info.setMusica(musica);
+        this.info.setArquivo(musica);
         this.info.setStatus(TorrePlayerStatus.INICIANDO);
+        executaComando(musica.getAbsolutePath());
+    }
+
+    @Override
+    public synchronized void tocar(Album album, Boolean random) {
+
+        if (this.isTocando()) {
+            throw new MusicaException("Som está ocupado tocando...");
+        }
+        this.info = new TorrePlayerInfo();
+        this.info.setArquivo(album);
+        this.info.setStatus(TorrePlayerStatus.INICIANDO);
+        executaComando(StringUtils.appendIfMissing(album.getAbsolutePath(),"/"));
+    }
+
+    @Override
+    public synchronized void tocar(Playlist playlist, boolean random) {
+        if (this.isTocando()) {
+            throw new MusicaException("Som está ocupado tocando...");
+        }
+        this.info = new TorrePlayerInfo();
+        this.info.setArquivo(playlist);
+        this.info.setStatus(TorrePlayerStatus.INICIANDO);
+        executaComando(playlist.getAbsolutePath());
+
+    }
+
+    private void executaComando(String absolutePath) {
         // triggers the async task, which updates the cn status accordingly
         ProcessBuilder processBuilder = new ProcessBuilder();
 
-        String absolutePath = musica.getAbsolutePath().replace(" ", this.cmdSpaceScape);
+        absolutePath = absolutePath.replace(" ", this.cmdSpaceScape);
 
         Integer volumeToDevice;
         if (nonNull(volumeRemapMin) && nonNull(volumeRemapMax) && (volumeRemapMin < volumeRemapMax)) {
@@ -91,7 +122,7 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
             this.process = processBuilder.start();
         } catch (IOException e) {
             throw new MusicaException(String.format("Error writing file to output stream. Musica was '%s'",
-                    musica.getAbsolutePath()), e);
+                    absolutePath), e);
         }
     }
 

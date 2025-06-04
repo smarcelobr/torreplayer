@@ -15,14 +15,27 @@ import static java.util.Objects.isNull;
 
 @Service
 public class AgendamentoServiceImpl implements AgendamentoService {
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(AgendamentoServiceImpl.class);
 
     private final AgendamentoRepository repository;
+    private final PlayerSchedulingService playerSchedulingService;
     private final List<Agendamento> agendamentoList;
 
-    public AgendamentoServiceImpl(AgendamentoRepository repository) {
+    public AgendamentoServiceImpl(AgendamentoRepository repository,
+                                  PlayerSchedulingService playerSchedulingService) {
         this.repository = repository;
+        this.playerSchedulingService = playerSchedulingService;
 
+        // carrega todos os agendamentos salvos no banco de dados
         agendamentoList = repository.findAll();
+        // cria os jobs deles
+        agendamentoList.forEach(a -> {
+            try {
+                playerSchedulingService.schedule(a);
+            } catch (Exception e) {
+                LOGGER.error("Erro ao agendar job id={}", a.getId(), e);
+            }
+        });
     }
 
     @Override
@@ -40,6 +53,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Override
     public void removerAgendamento(Agendamento agendamento) {
+        try {
+            playerSchedulingService.remove(agendamento);
+        } catch (Exception e) {
+            LOGGER.error("Erro ao remover job id={}", agendamento.getId(), e);
+        }
         agendamentoList.removeIf(a -> a.getId() == agendamento.getId());
         repository.salvarLista(agendamentoList);
     }
@@ -54,6 +72,12 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                     .max()
                     .ifPresentOrElse(lastId -> agendamento.setId(lastId + 1L),
                             () -> agendamento.setId(1L));
+        }
+
+        try {
+            playerSchedulingService.schedule(agendamento);
+        } catch (Exception e) {
+            LOGGER.error("Erro ao agendar job id={}", agendamento.getId(), e);
         }
 
         // se o agendamento com este id não existir, inclui. Caso contrário, atualiza.

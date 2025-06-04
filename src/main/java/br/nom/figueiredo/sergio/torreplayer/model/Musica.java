@@ -10,4 +10,9 @@ public class Musica extends Arquivo {
     public Album getAlbum() {
         return album;
     }
+
+    @Override
+    public TipoMidia getTipo() {
+        return TipoMidia.MUSICA;
+    }
 }
