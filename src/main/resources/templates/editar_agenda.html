@@ -24,35 +24,7 @@
         <label class="form-check-label" for="ativo">Ativo</label>
     </div>
 
-    <div class="card mb-3" th:if="${agendamento.tipo.name() == 'MUSICA'}">
-        <div class="card-body">
-            <h5 class="card-title">Informações da M&uacute;sica</h5>
-            <p class="card-text">
-                <strong>&Aacute;lbum:</strong>
-                <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${agendamento.musica.album.nome})}">
-                    <span th:text="${agendamento.musica.album.nome}">Nome do &aacute;lbum</span></a><br>
-                <strong>Música:</strong> <span th:text="${agendamento.musica.nome}"></span>
-            </p>
-        </div>
-    </div>
-    <div class="card mb-3" th:if="${agendamento.tipo.name() == 'ALBUM'}">
-        <div class="card-body">
-            <h5 class="card-title">Informações do &Aacute;lbum</h5>
-            <p class="card-text">
-                <strong>&Aacute;lbum:</strong>
-                <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${agendamento.album.nome})}">
-                    <span th:text="${agendamento.album.nome}">Nome do &aacute;lbum</span></a><br>
-            </p>
-        </div>
-    </div>
-    <div class="card mb-3" th:if="${agendamento.tipo.name()=='PARAR'}">
-        <div class="card-body">
-            <h5 class="card-title">Parar Música</h5>
-            <p class="card-text">
-                Programação do horário para parar a música que estiver tocando.
-            </p>
-        </div>
-    </div>
+    <div th:insert="~{agenda-base::midia-card}" class="mb-3"></div>
 
     <div>
         <form method="POST" enctype="multipart/form-data" action=""

@@ -19,6 +19,7 @@ public class PlayerTasklet implements Runnable {
     @Override
     public void run() {
 
+        LOGGER.info("Executando agendamento: [{}]", agendamento.getNome());
         try {
             if (agendamento.isAtivo()) {
                 switch (agendamento.getTipo()) {
@@ -30,6 +31,9 @@ public class PlayerTasklet implements Runnable {
                         break;
                     case MUSICA:
                         torrePlayerService.tocar(((AgendamentoMusica) agendamento).getMusica());
+                        break;
+                    case PARAR:
+                        torrePlayerService.stop();
                         break;
                 }
             }

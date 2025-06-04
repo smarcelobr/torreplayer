@@ -17,15 +17,8 @@
 
     <h2>Excluir agendamento <span th:text="${agendamento.nome}">Toque do meio-dia.</span></h2>
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Informações da Música</h5>
-            <p class="card-text">
-                <strong>Álbum:</strong> <span th:text="${agendamento.musica.album.nome}"></span><br>
-                <strong>Música:</strong> <span th:text="${agendamento.musica.nome}"></span>
-            </p>
-        </div>
-    </div>
+    <div th:insert="~{agenda-base::midia-card}" class="mb-3"></div>
+
     <div>
         <form method="POST" enctype="multipart/form-data" action="agendamentos.html"
               th:action="@{/agendamento/{agendamentoId}/exclusao(agendamentoId=${agendamento.id})}">

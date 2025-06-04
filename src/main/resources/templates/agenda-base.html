@@ -1,4 +1,36 @@
 <!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
+<div th:fragment="midia-card">
+    <div class="card" th:if="${agendamento.tipo.name() == 'MUSICA'}">
+        <div class="card-body">
+            <h5 class="card-title">Informações da M&uacute;sica</h5>
+            <p class="card-text">
+                <strong>&Aacute;lbum:</strong>
+                <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${agendamento.musica.album.nome})}">
+                    <span th:text="${agendamento.musica.album.nome}">Nome do &aacute;lbum</span></a><br>
+                <strong>Música:</strong> <span th:text="${agendamento.musica.nome}"></span>
+            </p>
+        </div>
+    </div>
+    <div class="card" th:if="${agendamento.tipo.name() == 'ALBUM'}">
+        <div class="card-body">
+            <h5 class="card-title">Informações do &Aacute;lbum</h5>
+            <p class="card-text">
+                <strong>&Aacute;lbum:</strong>
+                <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${agendamento.album.nome})}">
+                    <span th:text="${agendamento.album.nome}">Nome do &aacute;lbum</span></a><br>
+            </p>
+        </div>
+    </div>
+    <div class="card" th:if="${agendamento.tipo.name()=='PARAR'}">
+        <div class="card-body">
+            <h5 class="card-title">Parar Música</h5>
+            <p class="card-text">
+                Programação do horário para parar a música que estiver tocando.
+            </p>
+        </div>
+    </div>
+
+</div>
 
 <div th:fragment="form">
     <label class="form-label">Agendamento</label>

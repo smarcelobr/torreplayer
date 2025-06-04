@@ -26,9 +26,9 @@ public class PlayerSchedulingServiceImpl implements PlayerSchedulingService {
 
     @Override
     public void schedule(Agendamento agendamento) {
-        LOGGER.info("Agendamento id={} e cron={}", agendamento.getId(), agendamento.getCronExpression());
-
         remove(agendamento);
+        LOGGER.info("Agendamento nome=[{}] e cron={}", agendamento.getNome(), agendamento.getCronExpression());
+
         Runnable tasklet = new PlayerTasklet(torrePlayerService, agendamento);
 
         ScheduledFuture<?> scheduledTask = taskScheduler.schedule(tasklet,
@@ -43,7 +43,7 @@ public class PlayerSchedulingServiceImpl implements PlayerSchedulingService {
         if(scheduledTask != null) {
             scheduledTask.cancel(true);
             jobsMap.put(agendamento.getId(), null);
-            LOGGER.info("Agendamento id={} removido", agendamento.getId());
+            LOGGER.info("Agendamento removido: {}", agendamento.getNome());
         }
     }
 }

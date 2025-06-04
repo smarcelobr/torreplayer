@@ -22,9 +22,9 @@ if ! [[ "$VOLUME" =~ ^[0-9]+$ ]] || [ "$VOLUME" -lt 0 ] || [ "$VOLUME" -gt 100 ]
     exit 1
 fi
 
-# Verifica se o arquivo da música existe
-if [ ! -f "$MUSICA" ]; then
-    echo "Erro: Arquivo [$MUSICA] não encontrado"
+# Verifica se o arquivo ou diretório da música existe
+if [ ! -e "$MUSICA" ]; then
+    echo "Erro: Arquivo ou diretório [$MUSICA] não encontrado"
     exit 1
 fi
 
