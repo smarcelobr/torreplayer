@@ -1,6 +1,7 @@
 package br.nom.figueiredo.sergio.torreplayer.service;
 
 import br.nom.figueiredo.sergio.torreplayer.model.Agendamento;
+import br.nom.figueiredo.sergio.torreplayer.model.AgendamentoEvento;
 
 import java.util.List;
 
@@ -27,4 +28,13 @@ public interface AgendamentoService {
             );
         }
     }
+
+    Boolean getAtivo(long id);
+
+    void setAtivo(long id, boolean ativo);
+
+    /*
+    Lista os próximos eventos de agendamento para o agendamento com o id informado.
+     */
+    List<AgendamentoEvento> getProximosEventos(long id, int offset, int limit);
 }

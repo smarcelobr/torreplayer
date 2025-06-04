@@ -16,7 +16,15 @@
 
     <h2>Editar Agendamento <span th:text="${agendamento.id == 0} ? 'Novo' : '#'+${agendamento.id}"></span></h2>
 
-    <div class="card mb-3">
+    <div class="form-switch mb-3">
+        <input class="form-check-input" type="checkbox" role="switch"
+               id="ativo" name="ativo" th:data-agendamento-id="${agendamento.id}"
+               th:checked="${agendamento.ativo}"
+                onchange="toogleAgendamentoAtivoCheckbox(this)">
+        <label class="form-check-label" for="ativo">Ativo</label>
+    </div>
+
+    <div class="card mb-3" th:if="${agendamento.tipo.name() == 'MUSICA'}">
         <div class="card-body">
             <h5 class="card-title">Informações da Música</h5>
             <p class="card-text">
@@ -27,20 +35,32 @@
             </p>
         </div>
     </div>
+    <div class="card mb-3" th:if="${agendamento.tipo.name()=='PARAR'}">
+        <div class="card-body">
+            <h5 class="card-title">Parar Música</h5>
+            <p class="card-text">
+                Programação do horário para parar a música que estiver tocando.
+            </p>
+        </div>
+    </div>
+
     <div>
         <form method="POST" enctype="multipart/form-data" action=""
               th:action="@{/agendamento/{agendamentoId}(agendamentoId=${agendamento.id})}">
-            <input type="hidden" name="albumNome" th:value="${agendamento.musica.album.nome}">
-            <input type="hidden" name="musicaNome" th:value="${agendamento.musica.nome}">
+            <input type="hidden" name="tipo" th:value="${agendamento.tipo}">
+            <input type="hidden" name="albumNome" th:value="${agendamento.musica.album.nome}"
+                   th:if="${agendamento.tipo.name()=='MUSICA' || agendamento.tipo.name()=='ALBUM'}">
+            <input type="hidden" name="musicaNome" th:value="${agendamento.musica.nome}"
+                   th:if="${agendamento.tipo.name()=='MUSICA'}">
             <input type="hidden" name="playlistNome" value="">
-            <input type="hidden" name="tipo" value="MUSICA">
             <input type="hidden" id="cronExpression" name="cronExpression">
-            <input type="hidden" id="originalCronExpression" name="originalCronExpression" th:value="${agendamento.cronExpression}">
+            <input type="hidden" id="originalCronExpression" name="originalCronExpression"
+                   th:value="${agendamento.cronExpression}">
 
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
                 <input type="text" class="form-control" id="nome" name="nome" aria-describedby="nomeHelp" size="28"
-                th:value="${agendamento.nome}">
+                       th:value="${agendamento.nome}">
                 <div id="nomeHelp" class="form-text">Nome do agendamento.</div>
             </div>
 
@@ -54,6 +74,10 @@
     </div>
 </div>
 <div th:replace="~{base:: scripts}"></div>
-<script src="/static/js/agendamento.js" th:src="@{/js/agendamento.js(c=${@cachePreventNumber})}" ></script>
+<script src="/static/js/agendamento.js" th:src="@{/js/agendamento.js(c=${@cachePreventNumber})}"></script>
+<script th:inline="javascript">
+    // Executa quando a página carregar
+    document.addEventListener('DOMContentLoaded', carregarCronExpression);
+</script>
 </body>
 </html>

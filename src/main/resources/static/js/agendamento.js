@@ -254,9 +254,6 @@ function carregarCronExpression() {
 
 }
 
-// Executa quando a página carregar
-document.addEventListener('DOMContentLoaded', carregarCronExpression);
-
 function montarCronExpression() {
     const minutos = document.getElementById('minutosHidden').value;
     const horas = document.getElementById('horasHidden').value;
@@ -267,3 +264,73 @@ function montarCronExpression() {
     document.getElementById('cronExpression').value =
         '0 ' + minutos + ' ' + horas + ' ' + diasMes + ' ' + meses + ' ' + diasSemana;
 }
+
+// executa a api/agendamento/{id}/ativo passando no body o novo valor da coluna ativo
+function toogleAgendamentoAtivoCheckbox(checkboxElem) {
+    fetch(`${URL.apiUrlBase}/agendamento/${checkboxElem.dataset.agendamentoId}/ativo`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ativo: checkboxElem.checked})
+    })
+        .then(response => {
+            if (!response.ok) {
+                checkboxElem.checked = !checkboxElem.checked;
+                throw new Error('Falha ao atualizar o agendamento');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao atualizar o status do agendamento');
+        });
+}
+
+// obtem a data e hora do próximo evento do agendamento especificado pelo ID
+function getProximoEvento(agendamentoId) {
+    return fetch(`${URL.apiUrlBase}/agendamento/${agendamentoId}/next`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Falha ao obter o próximo evento');
+            }
+            /*
+            [
+              {"agendamentoId": 1,
+                "evento": "2025-06-04T10:00:00"}
+            ]
+             */
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.length > 0) {
+                const evento = new Date(data[0].evento);
+                const formatada = evento.toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                return formatada;
+            }
+            return 'Não há eventos programados';
+        })
+}
+
+// Adicione esta função no final do arquivo agendamento.js
+function carregarProximosEventos() {
+    document.querySelectorAll('[id^="proximo-evento-"]').forEach(element => {
+        const agendamentoId = element.id.replace('proximo-evento-', '');
+        getProximoEvento(agendamentoId)
+            .then(data => {
+                element.textContent = data;
+            })
+            .catch(error => {
+                element.textContent = 'Erro ao carregar';
+                console.error('Erro:', error);
+            });
+    });
+}
+

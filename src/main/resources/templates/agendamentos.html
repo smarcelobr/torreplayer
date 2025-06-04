@@ -13,21 +13,52 @@
         <a class="btn btn-primary" role="button"
            href="index.html" th:href="@{/}">
             <i class="bi bi-house-fill"></i> In&iacute;cio</a>
+
+        <a class="btn btn-primary" role="button"
+           href="/agendamento/parar"
+           th:href="@{/agendamento/parar}">
+            <i class="bi bi-calendar-plus"></i> Agendar Silêncio</a>
     </div>
 
     <h2>Agendamentos</h2>
     <ul class="list-group">
         <li class="list-group-item" th:each="agendamento : ${agendamentos}">
-            <span th:text="${agendamento.nome}">Nome do agendamento</span>
+            <div class="row">
+                <div class="col-2">
+            <span class="form-switch">
+            <input class="form-check-input" type="checkbox" role="switch"
+                   th:data-agendamento-id="${agendamento.id}"
+                   th:id="'ativo' + ${agendamento.id}"
+                   onclick="toogleAgendamentoAtivoCheckbox(this)"
+                   th:checked="${agendamento.ativo}">
+            </span>
 
-            <div class="float-end">
-                <a class="btn btn-primary" role="button"
+                    <span th:switch="${agendamento.tipo.name()}">
+                <i class="bi bi-volume-mute-fill" th:case="'PARAR'"></i>
+                <i class="bi bi-music-note" th:case="'MUSICA'"></i>
+                <i class="bi bi-vinyl-fill" th:case="'ALBUM'"></i>
+                <i class="bi bi-music-note-list" th:case="'PLAYLIST'"></i>
+            </span>
+                </div>
+
+                <div class="col-10">
+                    <!-- Adicionando o próximo evento -->
+                    <small class="text-muted ms-2">
+                        Próximo: <span th:id="'proximo-evento-' + ${agendamento.id}">Carregando...</span>
+                    </small>
+                </div>
+            </div>
+            <div class="row">
+                <span th:text="${agendamento.nome}" class="col-12">Nome do agendamento</span>
+            </div>
+
+            <div class="row">
+                <a class="col-3 offset-5 btn btn-primary" role="button"
                    href="/editar_agenda"
                    th:href="@{/agendamento/{agendamentoId}(agendamentoId=${agendamento.id})}">
                     <i class="bi bi-pencil-square"></i> Alterar</a>
 
-                <!-- Button trigger modal delete confirmation -->
-                <a class="btn btn-primary" role="button"
+                <a class="col-3 offset-1 btn btn-danger" role="button"
                    href="/excluir_agenda"
                    th:href="@{/agendamento/{agendamentoId}/exclusao(agendamentoId=${agendamento.id})}">
                     <i class="bi bi-trash"></i> Remover</a>
@@ -41,6 +72,10 @@
 
 </div>
 <div th:replace="~{base:: scripts}"></div>
-
+<script src="/static/js/agendamento.js" th:src="@{/js/agendamento.js(c=${@cachePreventNumber})}"></script>
+<script th:inline="javascript">
+    // Chama a função quando a página carregar
+    document.addEventListener('DOMContentLoaded', carregarProximosEventos);
+</script>
 </body>
 </html>

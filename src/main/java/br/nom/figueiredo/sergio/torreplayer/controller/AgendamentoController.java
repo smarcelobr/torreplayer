@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Controller
 @RequestMapping("agendamento")
@@ -38,7 +39,7 @@ public class AgendamentoController {
         agendamento.setOrdem(this.agendamentoService.getUltimaOrdem() + 1);
         model.addAttribute("agendamento", agendamento);
 
-        return "editar_agenda_parar";
+        return "editar_agenda";
     }
 
     @GetMapping("{albumNome}/{musicaNome}")
@@ -72,18 +73,20 @@ public class AgendamentoController {
     @PostMapping("{id:\\d+}")
     public String salvarAgendamento(@PathVariable long id,
                                     @RequestParam AgendamentoTipo tipo,
-                                    @RequestParam String albumNome,
-                                    @RequestParam String musicaNome,
-                                    @RequestParam String playlistNome,
+                                    @RequestParam(required = false) String albumNome,
+                                    @RequestParam(required = false) String musicaNome,
+                                    @RequestParam(required = false) String playlistNome,
                                     @RequestParam String nome,
                                     @RequestParam String cronExpression,
                                     RedirectAttributes redirectAttributes) {
+        Boolean ativo = null;
+
         validarCronExpression(cronExpression);
 
         Agendamento agendamento = switch (tipo) {
-            case MUSICA -> salvarAgendamentoMusica(id, albumNome, musicaNome, nome, cronExpression);
-            case PLAYLIST -> salvarAgendamentoPlaylist(id, playlistNome, nome, cronExpression);
-            case PARAR -> salvarAgendamentoParar(id, nome, cronExpression);
+            case MUSICA -> salvarAgendamentoMusica(id, albumNome, musicaNome, ativo, nome, cronExpression);
+            case PLAYLIST -> salvarAgendamentoPlaylist(id, playlistNome, ativo, nome, cronExpression);
+            case PARAR -> salvarAgendamentoParar(id, ativo, nome, cronExpression);
             default -> throw new IllegalArgumentException("Tipo de agendamento não reconhecido");
         };
 
@@ -95,13 +98,13 @@ public class AgendamentoController {
         return "redirect:/agendamento";
     }
 
-    public Agendamento salvarAgendamentoMusica(@PathVariable long id,
-                                               @RequestParam String albumNome,
-                                               @RequestParam String musicaNome,
-                                               @RequestParam String nome,
-                                               @RequestParam String cronExpression) {
+    public Agendamento salvarAgendamentoMusica(long id,
+                                               String albumNome,
+                                               String musicaNome,
+                                               Boolean ativo, String nome,
+                                               String cronExpression) {
         AgendamentoMusica agendamento;
-        agendamento = getAgendamento(id, nome, cronExpression, new AgendamentoMusicaStrategy());
+        agendamento = getAgendamento(id, ativo, nome, cronExpression, new AgendamentoMusicaStrategy());
 
         Album album = musicaService.getAlbumByNome(albumNome);
         Musica musica = musicaService.getMusicaByNome(album, musicaNome);
@@ -110,12 +113,13 @@ public class AgendamentoController {
         return agendamento;
     }
 
-    public Agendamento salvarAgendamentoPlaylist(@PathVariable long id,
-                                                 @RequestParam String playlistNome,
-                                                 @RequestParam String nome,
-                                                 @RequestParam String cronExpression) {
+    public Agendamento salvarAgendamentoPlaylist(long id,
+                                                 String playlistNome,
+                                                 Boolean ativo,
+                                                 String nome,
+                                                 String cronExpression) {
         AgendamentoPlaylist agendamento;
-        agendamento = getAgendamento(id, nome, cronExpression, new AgendamentoPlaylistStrategy());
+        agendamento = getAgendamento(id, ativo, nome, cronExpression, new AgendamentoPlaylistStrategy());
 
         Playlist playlist = musicaService.getPlaylistByNome(playlistNome);
 
@@ -123,11 +127,12 @@ public class AgendamentoController {
         return agendamento;
     }
 
-    public Agendamento salvarAgendamentoParar(@PathVariable long id,
-                                              @RequestParam String nome,
-                                              @RequestParam String cronExpression) {
+    public Agendamento salvarAgendamentoParar(long id,
+                                              Boolean ativo,
+                                              String nome,
+                                              String cronExpression) {
 
-        return getAgendamento(id, nome, cronExpression, new AgendamentoPararStrategy());
+        return getAgendamento(id, ativo, nome, cronExpression, new AgendamentoPararStrategy());
     }
 
     private void validarCronExpression(String cronExpression) {
@@ -136,7 +141,7 @@ public class AgendamentoController {
         }
     }
 
-    private <T extends Agendamento> T getAgendamento(long id, String nome, String cronExpression,
+    private <T extends Agendamento> T getAgendamento(long id, Boolean ativo, String nome, String cronExpression,
                                                      AgendamentoStrategy<T> agendamentoFactory) {
         T agendamento;
         if (id != 0) {
@@ -150,6 +155,7 @@ public class AgendamentoController {
                 // converte o tipo de agendamento salvo para musica
                 agendamento = agendamentoFactory.novaInstancia();
                 agendamento.setId(agendamentoSalvo.getId());
+                agendamento.setAtivo(agendamentoSalvo.isAtivo());
                 agendamento.setOrdem(agendamentoSalvo.getOrdem());
                 agendamento.setNome(agendamentoSalvo.getNome());
                 agendamento.setCronExpression(agendamentoSalvo.getCronExpression());
@@ -158,8 +164,15 @@ public class AgendamentoController {
             agendamento = agendamentoFactory.novaInstancia();
             agendamento.setOrdem(this.agendamentoService.getUltimaOrdem() + 1);
         }
-        agendamento.setNome(nome);
-        agendamento.setCronExpression(cronExpression);
+        if (nonNull(ativo)) {
+            agendamento.setAtivo(ativo);
+        }
+        if (nonNull(nome) && !nome.isBlank()) {
+            agendamento.setNome(nome);
+        }
+        if (nonNull(cronExpression) && !cronExpression.isBlank()) {
+            agendamento.setCronExpression(cronExpression);
+        }
         return agendamento;
     }
 
