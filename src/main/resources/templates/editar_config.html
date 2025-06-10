@@ -16,18 +16,32 @@
     <h2>Configura&ccedil;&otilde;es</h2>
 
     <div>
+        <div th:replace="~{base :: volume-control}"></div>
+
         <form method="POST" enctype="multipart/form-data" action=""
               th:action="@{/config}">
             <div class="mb-3">
                 <label for="cmdLabel" class="form-label">Label do botão</label>
-                <input type="text" class="form-control" id="cmdLabel" name="cmdLabel" aria-describedby="cmdLabelHelp" size="28"
-                th:value="${cfg.cmdLabel}">
+                <input type="text" class="form-control" id="cmdLabel" name="cmdLabel" aria-describedby="cmdLabelHelp"
+                       size="28"
+                       th:value="${cfg.cmdLabel}" onchange="handleCmdLabelChange()">
                 <div id="cmdLabelHelp" class="form-text">Altera o label do botão que toca externamente.</div>
             </div>
-            <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Salvar</button>
+            <button type="submit" class="btn btn-primary" id="submitButton" disabled><i class="bi bi-pencil-square"></i>
+                Salvar
+            </button>
         </form>
     </div>
 </div>
 <div th:replace="~{base:: scripts}"></div>
+<script>
+    const initialValue = document.getElementById('cmdLabel').value;
+
+    function handleCmdLabelChange() {
+        const currentValue = document.getElementById('cmdLabel').value;
+        document.getElementById('submitButton').disabled = currentValue === initialValue;
+    }
+</script>
+<script src="/static/js/configuracoes.js" th:src="@{/js/configuracoes.js(c=${@cachePreventNumber})}" ></script>
 </body>
 </html>

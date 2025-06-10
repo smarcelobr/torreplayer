@@ -49,7 +49,6 @@
 
     <div th:replace="~{base :: torre-player-info}"></div>
 
-    <div th:replace="~{base :: volume-control}"></div>
 </div>
 
 <div th:fragment="scripts">
@@ -64,5 +63,4 @@
         };
     </script>
     <script src="/static/js/torrePlayer.js" th:src="@{/js/torrePlayer.js(c=${@cachePreventNumber})}" ></script>
-    <script src="/static/js/configuracoes.js" th:src="@{/js/configuracoes.js(c=${@cachePreventNumber})}" ></script>
 </div>
