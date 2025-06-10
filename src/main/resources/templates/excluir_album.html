@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="pt">
+<head th:replace="~{base :: head}"></head>
+<!--/*@thymesVar id="msg" type="java.lang.String"*/-->
+<!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
+<!--/*@thymesVar id="album" type="br.nom.figueiredo.sergio.torreplayer.model.Album"*/-->
+<body>
+<div class="container">
+    <div th:replace="~{base::top-page}"></div>
+
+    <div class="mb-3">
+        <a class="btn btn-primary" role="button"
+           href="index.html" th:href="@{/}">
+            <i class="bi bi-house-fill"></i> In&iacute;cio</a>
+    </div>
+
+    <h2>Excluir &Aacute;lbum <span th:text="${album.nome}">Canto Gregoriano</span></h2>
+
+    <div class="mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Informa&ccedil;&otilde;es da &Aacute;lbum</h5>
+            <p class="card-text">
+                <strong>&Aacute;lbum:</strong>
+                <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${album.nome})}">
+                    <span th:text="${album.nome}">Nome do &aacute;lbum</span></a><br>
+            </p>
+        </div>
+    </div>
+
+    <div>
+        <form method="POST" enctype="multipart/form-data" action="excluir_album.html"
+              th:action="@{/album/{albumNome}/exclusao(albumNome=${album.nome})}">
+
+            <div class="mb-3">
+                <label for="btnExcluir" class="form-label">Confirma a exclusão do &aacute;lbum e de
+                    TODAS as suas m&uacute;sicas?</label>
+            </div>
+            <button type="submit" id="btnExcluir" class="btn btn-danger"><i class="bi bi-pencil-square"></i> Excluir</button>
+            <a class="btn btn-primary" role="button"
+               href="editar_album.html" th:href="@{/album/{albumNome}/editar-album(albumNome=${album.nome})}">
+                <i class="bi bi-box-arrow-left"></i> Cancelar</a>
+
+        </form>
+    </div>
+</div>
+<div th:replace="~{base:: scripts}"></div>
+</body>
+</html>

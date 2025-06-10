@@ -27,6 +27,9 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
     @Value("${torre.cmd.play}")
     private String cmdPlayTorre;
 
+    @Value("${torre.cmd.play.random}")
+    private String cmdPlayTorreRandom;
+
     @Value("${torre.cmd.spaceEscape}")
     private String cmdSpaceScape;
 
@@ -66,7 +69,7 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
         this.info = new TorrePlayerInfo();
         this.info.setArquivo(musica);
         this.info.setStatus(TorrePlayerStatus.INICIANDO);
-        executaComando(musica.getAbsolutePath());
+        executaComando(musica.getAbsolutePath(), false);
     }
 
     @Override
@@ -78,7 +81,7 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
         this.info = new TorrePlayerInfo();
         this.info.setArquivo(album);
         this.info.setStatus(TorrePlayerStatus.INICIANDO);
-        executaComando(StringUtils.appendIfMissing(album.getAbsolutePath(),"/"));
+        executaComando(StringUtils.appendIfMissing(album.getAbsolutePath(), "/"), random);
     }
 
     @Override
@@ -89,11 +92,11 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
         this.info = new TorrePlayerInfo();
         this.info.setArquivo(playlist);
         this.info.setStatus(TorrePlayerStatus.INICIANDO);
-        executaComando(playlist.getAbsolutePath());
+        executaComando(playlist.getAbsolutePath(), random);
 
     }
 
-    private void executaComando(String absolutePath) {
+    private void executaComando(String absolutePath, boolean random) {
         // triggers the async task, which updates the cn status accordingly
         ProcessBuilder processBuilder = new ProcessBuilder();
 
@@ -109,7 +112,8 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
             volumeToDevice = configService.getConfiguracoes().getMasterVolume();
         }
 
-        String cmd = cmdPlayTorre
+        String cmd = random ? cmdPlayTorreRandom : cmdPlayTorre;
+        cmd = cmd
                 .replace("#musicaPath", absolutePath)
                 .replace("#musicaVolume", Integer.toString(volumeToDevice));
 

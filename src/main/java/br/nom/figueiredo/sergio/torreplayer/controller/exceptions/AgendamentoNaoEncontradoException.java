@@ -1,4 +1,4 @@
-package br.nom.figueiredo.sergio.torreplayer.controller;
+package br.nom.figueiredo.sergio.torreplayer.controller.exceptions;
 
 
 import org.springframework.http.HttpStatus;

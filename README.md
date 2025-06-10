@@ -5,14 +5,26 @@
 ### Pré-requisitos
 
 - Raspberry Pi 3 ou superior
+  (Raspbian OS Lite 32-bit with no desktop)
 - JAVA 11 ou superior
+- VLC para Raspbian OS Lite
 
 ### Instalação do Java
 
 ```bash
 sudo apt-get update
-sudo sudo apt-get openjdk-17-jre
+sudo apt-get upgrade
+sudo apt-get install openjdk-17-jre
+sudo apt-get install vlc
 ```
+
+Para ver a versão das aplicações instaladas:
+
+    $ java -version
+    $ cvlc -version
+
+
+
 ### Raspberry PI 3 antigo usa omxplayer
 
 ```properties
@@ -60,12 +72,27 @@ O pom.xml tem um plugin para fazer o upload do arquivo jar para o servidor.
 java -Dspring.profile.active=nave -jar /opt/torreplayer/musica.jar
 ```
 
+## GUI autostart file.  
+
+The bash script requires the GUI to be running before it can be started then you need to use the GUI autostart file.
+
+    $ sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
+
+    $ cat /etc/xdg/lxsession/LXDE-pi/autostart
+    (...)
+    @/opt/torreplayer/start.sh
+
+    $ ls -l /opt/torreplayer/start.sh
+    -rwxr-xr-x 1 appmusica appjava 342 Jun  4 15:06 /opt/torreplayer/start.sh
+
 ## App as a Service no Raspberry Pi
+
+**Não funcionou porque o cvlc precisa de GUI **
 
     Cria grupo 
     $ sudo groupadd appjava
     Cria usuário (system) sem login e nem home
-    $ sudo adduser appmusica --system
+    $ sudo adduser appmusica --system --home /home/appmusica
     Adiciona o usuário ao grupo.
     $ sudo adduser appmusica appjava
     $ sudo adduser <seu_user> appjava
@@ -75,14 +102,28 @@ Criar arquivo `/etc/sudoers.d/030_musica`:
 appmusica       ALL=(ALL)       NOPASSWD: ALL
 ```
 
-### MUSICA EM /OPT
+### MUSICA EM /OPT (apenas comandos )
+
+pi@gregorio:~ $ cd /opt
+pi@gregorio:/opt $ sudo mkdir musica
+pi@gregorio:/opt $ sudo groupadd appjava
+pi@gregorio:/opt $ sudo adduser pi appjava
+Adding user `pi' to group `appjava' ...
+Done.
+pi@gregorio:/opt $ sudo chown -R pi:appjava /opt/musica
+pi@gregorio:/opt $ sudo chmod a+x /opt/musica
+pi@gregorio:/opt $ sudo chmod ug+rwx /opt/musica
+
+
+
+### MUSICA EM /OPT (versao antiga)
 
 ```
-$ sudo mkdir /opt/torreplayer
-$ sudo chown appmusica:appjava /opt/torreplayer
+$ sudo mkdir /opt/musica
+$ sudo chown -R appmusica:appjava /opt/musica
 ```
 
-Script `/opt/torreplayer/start.sh` bash para iniciar o java:
+Script `/opt/musica/start.sh` bash para iniciar o java:
 
 ``` 
 #!/bin/bash
@@ -119,12 +160,12 @@ After=syslog.target network.target
 [Service]
 SuccessExitStatus=143
 
-User=appmusica
-Group=appjava
+User=pi
+Group=pi
 
-Type=forking
+Type=simple
 
-ExecStart=/opt/torreplayer/start.sh
+ExecStart=/opt/musica/start.sh
 ExecStop=/bin/kill -15 $MAINPID
 
 [Install]

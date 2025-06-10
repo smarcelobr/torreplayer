@@ -17,24 +17,34 @@
         <a class="btn btn-primary" role="button"
            href="album.html" th:href="@{/album/{albumNome}(albumNome=${album.nome})}">
             <i class="bi bi-music-note-list"></i> &Aacute;lbum</a>
+        <a class="btn btn-danger float-end" role="button"
+           href="album.html" th:href="@{/album/{albumNome}/exclusao(albumNome=${album.nome})}">
+            <i class="bi bi-trash"></i> Excluir &Aacute;lbum</a>
     </div>
 
     <h2>Editar &aacute;lbum</h2>
 
-    <div>
+    <div class="mb-3">
         <form method="POST" enctype="multipart/form-data" action="nome"
               th:action="@{/album/{albumNome}/editar-album/nome(albumNome=${album.nome})}">
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
                 <input type="text" class="form-control" id="nome" name="novoNome" aria-describedby="nomeHelp" size="28"
-                th:value="${album.nome}">
+                       th:value="${album.nome}">
                 <div id="nomeHelp" class="form-text">Altera o nome do &aacute;lbum.</div>
             </div>
             <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Salvar</button>
         </form>
+    </div>
+    <div class="mb-3 row">
+        <h2 class="col-3">M&uacute;sicas</h2>
+        <a class="btn btn-primary offset-6 col-3" role="button"
+           href="incluir_musica.html" th:href="@{/album/{albumNome}/incluir-musica(albumNome=${album.nome})}">
+            <i class="bi bi-file-music"></i> Incluir Música</a>
+    </div>
+    <div class="mb-3">
         <ul class="list-group">
             <li class="list-group-item" th:each="musica : ${musicas}">
-
                 <span th:text="${musica.nome}">Nome da M&uacute;sica</span>
 
                 <audio controls preload="none">
@@ -44,6 +54,10 @@
                     Your browser does not support the audio element.
                 </audio>
 
+                <a class="btn btn-danger float-end" role="button"
+                   href="/album/canto_gregoriano/01 canto.mp3/exclusao"
+                   th:href="@{/album/{albumNome}/{musicaNome}/exclusao(albumNome=${album.nome},musicaNome=${musica.nome})}">
+                    <i class="bi bi-trash"></i> Excluir</a>
             </li>
         </ul>
     </div>

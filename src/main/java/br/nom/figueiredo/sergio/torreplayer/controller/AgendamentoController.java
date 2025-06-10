@@ -1,5 +1,6 @@
 package br.nom.figueiredo.sergio.torreplayer.controller;
 
+import br.nom.figueiredo.sergio.torreplayer.controller.exceptions.AgendamentoNaoEncontradoException;
 import br.nom.figueiredo.sergio.torreplayer.model.*;
 import br.nom.figueiredo.sergio.torreplayer.service.AgendamentoService;
 import br.nom.figueiredo.sergio.torreplayer.service.MusicaService;

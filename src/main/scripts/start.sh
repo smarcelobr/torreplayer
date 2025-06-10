@@ -3,7 +3,7 @@
 echo INICIANDO MUSICA
 
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-armhf
-WORKDIR=/opt/torreplayer
+WORKDIR=/opt/musica
 JAVA_OPTIONS=" -Xms512m -Xmx768m -server -Dspring.profiles.active=nave"
 # APP_OPTIONS=" -c /path/to/app.config -d /path/to/datadir "
 APP_OPTIONS=""

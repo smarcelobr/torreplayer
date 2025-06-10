@@ -14,7 +14,7 @@
 
         <a class="btn btn-primary" role="button" th:if="${torrePlayerInfo.arquivo}"
            href="../album.html"
-           th:href="@{/album/{albumNome}(albumNome=${torrePlayerInfo.arquivo.tipo == 'MUSICA'?torrePlayerInfo.arquivo.album.nome:torrePlayerInfo.arquivo.nome})}">
+           th:href="@{/album/{albumNome}(albumNome=${torrePlayerInfo.arquivo.tipo.name() == 'MUSICA'?torrePlayerInfo.arquivo.album.nome:torrePlayerInfo.arquivo.nome})}">
             <i class="bi bi-music-note-list"></i> Álbum</a>
     </div>
 

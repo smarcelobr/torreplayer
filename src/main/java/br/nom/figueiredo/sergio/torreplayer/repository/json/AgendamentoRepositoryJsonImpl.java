@@ -102,11 +102,38 @@ public class AgendamentoRepositoryJsonImpl implements AgendamentoRepository {
         }
     }
 
+    private boolean agendamentoValido(Agendamento agendamento) {
+        if (agendamento == null) {
+            return false;
+        }
+        switch (agendamento.getTipo()) {
+            case ALBUM -> {
+                AgendamentoAlbum aa = (AgendamentoAlbum) agendamento;
+                return aa.getAlbum() != null;
+            }
+            case MUSICA -> {
+                AgendamentoMusica am = (AgendamentoMusica) agendamento;
+                return am.getMusica() != null && am.getMusica().getAlbum() != null;
+            }
+            case PLAYLIST -> {
+                AgendamentoPlaylist ap = (AgendamentoPlaylist) agendamento;
+                return ap.getPlaylist() != null;
+            }
+            case PARAR -> {
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
     private ArrayList<AgendamentoJson> convertModelToJson(List<Agendamento> agendamentoList) {
         if (agendamentoList == null) {
             return new ArrayList<>();
         }
         return agendamentoList.stream()
+                .filter(this::agendamentoValido)
                 .map(agendamento -> {
                     AgendamentoJson json;
                     switch (agendamento.getTipo()) {

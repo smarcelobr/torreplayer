@@ -1,5 +1,6 @@
 package br.nom.figueiredo.sergio.torreplayer.controller;
 
+import br.nom.figueiredo.sergio.torreplayer.controller.exceptions.AlbumNaoEncontradoException;
 import br.nom.figueiredo.sergio.torreplayer.model.Album;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
 import br.nom.figueiredo.sergio.torreplayer.service.MusicaService;
@@ -27,30 +28,42 @@ public class IncluirMusicaController {
         this.musicaService = musicaService;
     }
 
-    @GetMapping
-    public String getIncluirMusicaAlbum(Model model, @PathVariable String albumNome) {
+    @ModelAttribute
+    public void addAttributes(Model model, @PathVariable String albumNome) {
         Album album = musicaService.getAlbumByNome(albumNome);
+        if (album == null) {
+            throw new AlbumNaoEncontradoException();
+        }
         model.addAttribute("album", album);
-        return "incluir_musica.html";
+    }
+
+    @GetMapping
+    public String getIncluirMusicaAlbum() {
+        return "incluir_musica";
     }
 
     @PostMapping
-    public String postIncluirMusicaAlbum(Model model, @PathVariable String albumNome,
+    public String postIncluirMusicaAlbum(Model model, @ModelAttribute Album album,
                                          @RequestParam("musica_file") MultipartFile file,
                                          RedirectAttributes redirectAttributes) {
+        if (file.isEmpty()) {
+            model.addAttribute("msg",
+                    "Música não especificada.");
+            return getIncluirMusicaAlbum();
+        }
 
-        Album album = musicaService.getAlbumByNome(albumNome);
 
+        String redirect = "redirect:/album/%s/editar-album".formatted(album.getNome());
         try (InputStream fileInputStream = file.getInputStream()) {
             Musica musica = musicaService.postMusica(album, file.getOriginalFilename(), fileInputStream);
             redirectAttributes.addFlashAttribute("msg",
-                    "A música " + musica.getNome() + " foi incluída neste álbum");
-            return "redirect:/album/"+album.getNome();
+                    "A música %s foi incluída neste álbum".formatted(musica.getNome()));
+            return redirect;
         } catch (IOException e) {
-            String msg = "Falha ao tentar incluir música " + file.getOriginalFilename() + " neste álbum.";
+            String msg = "Falha ao tentar incluir música %s neste álbum.".formatted(file.getOriginalFilename());
             logger.info(msg, e);
             redirectAttributes.addFlashAttribute("msg", msg);
-            return "redirect:/album/"+album.getNome();
+            return redirect;
         }
 
     }

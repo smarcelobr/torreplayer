@@ -37,7 +37,7 @@ numid=1,iface=MIXER,name='PCM Playback Volume'
 ## Tocar um MP3 com o cvlc
 
 ```bash
-cvlc --play-and-exit --no-video-title-show file:///home/pi/Music/05\ Faixa\ 5.mp3
+cvlc --no-dbus --play-and-exit --no-video-title-show file:///home/pi/Music/05\ Faixa\ 5.mp3
 cvlc --play-and-exit --no-video-title-show 'Music/populares/47-Attention - (Atención).mp3'
 ```
 
@@ -71,3 +71,11 @@ ssh pi@gregorio.local "pkill -SIGTERM java"
 ```cmd
 scp D:\code\github\smarcelobr\torreplayer\src\main\scripts\tocaMusica.sh pi@gregorio.local:/opt/torreplayer
 ```
+## Iniciando o VLC no cron (do usuário) ao iniciar o raspberry
+
+    $ crontab -e
+
+Incluir a seguinte linha:
+
+    @reboot vlc --no-dbus -I http --http-password=abc123 --http-port=20000 --file-logging --logfile=/opt/musica/log/vlc.log --logmode=text --no-playlist-autostart --play-and-stop /opt/musica/midias/Brasileiras/* /opt/musica/midias/Canto\ Gregoriano/*
+

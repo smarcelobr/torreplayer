@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -134,6 +136,37 @@ public class MusicaRepositoryImpl implements MusicaRepository {
         return null;
     }
 
+    @Override
+    public void deleteMusica(Musica musica) {
+        Path musicaPath = toPath(musica);
+        if (nonNull(musicaPath) && Files.exists(musicaPath)) {
+            try {
+                Files.delete(musicaPath);
+            } catch (IOException e) {
+                throw new MusicaException("Falha ao apagar música.", e);
+            }
+        }
+    }
+
+    @Override
+    public void deleteAlbum(Album album) {
+        Path albumPath = toPath(album);
+        if (nonNull(albumPath) && Files.exists(albumPath)) {
+            try (Stream<Path> walk = Files.walk(albumPath)) {
+                walk.sorted(Comparator.reverseOrder())
+                        .forEach(path -> {
+                            try {
+                                Files.delete(path);
+                            } catch (IOException e) {
+                                throw new MusicaException("Falha ao apagar arquivo/pasta do álbum.", e);
+                            }
+                        });
+            } catch (IOException e) {
+                throw new MusicaException("Falha ao apagar álbum.", e);
+            }
+        }
+    }
+
     private Path toPath(Arquivo arquivo) {
         if (isNull(arquivo)) {
             return null;
@@ -191,7 +224,7 @@ public class MusicaRepositoryImpl implements MusicaRepository {
             if (nonNull(pathAlbum)) {
                 Path musicaPath = pathAlbum.resolve(nomeMusica);
                 Musica musica = this.musicaFromPath(musicaPath);
-                try (OutputStream fileOutput = Files.newOutputStream(musicaPath)) {
+                try (OutputStream fileOutput = Files.newOutputStream(musicaPath, CREATE_NEW, TRUNCATE_EXISTING)) {
                     IOUtils.copy(musicaContents, fileOutput);
                 } catch (IOException e) {
                     throw new MusicaException(String.format("Falha ao escrever música %s", musicaPath), e);

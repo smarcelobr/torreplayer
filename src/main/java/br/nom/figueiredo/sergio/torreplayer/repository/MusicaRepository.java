@@ -25,4 +25,8 @@ public interface MusicaRepository {
     Album alterarNomeAlbum(String albumNome, String novoNome);
 
     Playlist getPlaylistByNome(String playlistNome);
+
+    void deleteMusica(Musica musica);
+
+    void deleteAlbum(Album album);
 }

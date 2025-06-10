@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="pt">
+<head th:replace="~{base :: head}"></head>
+<!--/*@thymesVar id="msg" type="java.lang.String"*/-->
+<!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
+<!--/*@thymesVar id="musica" type="br.nom.figueiredo.sergio.torreplayer.model.Musica"*/-->
+<body>
+<div class="container">
+    <div th:replace="~{base::top-page}"></div>
+
+    <div class="mb-3">
+        <a class="btn btn-primary" role="button"
+           href="index.html" th:href="@{/}">
+            <i class="bi bi-house-fill"></i> In&iacute;cio</a>
+    </div>
+
+    <h2>Excluir m&uacute;sica <span th:text="${musica.nome}">Ave Maria</span></h2>
+
+    <div class="mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Informações da M&uacute;sica</h5>
+            <p class="card-text">
+                <strong>&Aacute;lbum:</strong>
+                <a href="album.html" th:href="@{/album/{albumNome}(albumNome=${musica.album.nome})}">
+                    <span th:text="${musica.album.nome}">Nome do &aacute;lbum</span></a><br>
+                <strong>Música:</strong> <span th:text="${musica.nome}"></span>
+            </p>
+        </div>
+    </div>
+
+    <div>
+        <form method="POST" enctype="multipart/form-data" action="excluir_musica.html"
+              th:action="@{/album/{albumNome}/{musicaNome}/exclusao(albumNome=${album.nome},musicaNome=${musica.nome})}">
+
+            <div class="mb-3">
+                <label for="btnExcluir" class="form-label">Confirma a exclusão da m&uacute;sica ?</label>
+            </div>
+            <button type="submit" id="btnExcluir" class="btn btn-danger"><i class="bi bi-pencil-square"></i> Excluir</button>
+            <a class="btn btn-primary" role="button"
+               href="album.html" th:href="@{/album/{albumNome}/editar-album(albumNome=${musica.album.nome})}">
+                <i class="bi bi-box-arrow-left"></i> Cancelar</a>
+
+        </form>
+    </div>
+</div>
+<div th:replace="~{base:: scripts}"></div>
+</body>
+</html>

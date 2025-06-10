@@ -25,4 +25,7 @@ public interface MusicaService {
     Album alterarNomeAlbum(String albumNome, String novoNome);
 
     Playlist getPlaylistByNome(String playlistNome);
+
+    void excluirDoAlbum(Album album, Musica musica);
+    void excluirAlbumCompleto(Album album);
 }

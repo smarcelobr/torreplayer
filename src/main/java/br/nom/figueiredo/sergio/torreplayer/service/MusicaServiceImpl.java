@@ -59,6 +59,17 @@ public class MusicaServiceImpl implements MusicaService {
     }
 
     @Override
+    public void excluirDoAlbum(Album album, Musica musica) {
+        this.repository.deleteMusica(musica);
+    }
+
+    @Override
+    public void excluirAlbumCompleto(Album album) {
+        LOGGER.info("Excluindo album completo: {}", album.getNome());
+        this.repository.deleteAlbum(album);
+    }
+
+    @Override
     public InputStream getMusicStream(Musica musica) {
         return this.repository.getMusicStream(musica);
     }
