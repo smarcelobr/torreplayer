@@ -26,8 +26,11 @@
 
     <div th:insert="~{agenda-base::midia-card}" class="mb-3"></div>
 
+    <div class="alert alert-info form-erros-hidden" role="alert" id="form-erros">
+    </div>
+
     <div>
-        <form method="POST" enctype="multipart/form-data" action=""
+        <form id="agendamento-form" method="POST" enctype="multipart/form-data" action=""
               th:action="@{/agendamento/{agendamentoId}(agendamentoId=${agendamento.id})}">
             <input type="hidden" name="tipo" th:value="${agendamento.tipo}">
             <input type="hidden" name="albumNome" th:value="${agendamento.album.nome}"
@@ -71,6 +74,33 @@
 <script th:inline="javascript">
     // Executa quando a página carregar
     document.addEventListener('DOMContentLoaded', carregarCronExpression);
+
+    const form = document.getElementById('agendamento-form');
+
+    form.addEventListener('submit', function(event) {
+        const erros = validarForm()
+
+        if (erros.length > 0) {
+            // Prevents the default form submission
+            event.preventDefault();
+            event.stopPropagation()
+
+            // publica os erros em span dentro de form-erros
+            let formErros = document.getElementById('form-erros');
+            formErros.innerHTML = '';
+
+            erros.forEach(erro => {
+                let span = document.createElement('span');
+                span.innerHTML = erro;
+                formErros.appendChild(span);
+            })
+            formErros.classList.remove('form-erros-hidden');
+            formErros.scrollIntoView({behavior: 'smooth', block: 'start'});
+
+        } else {
+            montarCronExpression();
+        }
+    });
 </script>
 </body>
 </html>

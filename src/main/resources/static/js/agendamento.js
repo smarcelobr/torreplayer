@@ -1,11 +1,23 @@
 function toggleMinutos() {
-    var checkboxes = document.getElementById('checkboxesMinutos');
-    var hidden = document.getElementById('minutosHidden');
-    if (document.getElementById('todosMinutos').checked) {
-        checkboxes.classList.remove("agenda-checkboxes-show");
-        checkboxes.classList.add("agenda-checkboxes-hidden");
-        hidden.value = '*';
+    const checkboxes = document.getElementById('checkboxesMinutos');
+    //var hidden = document.getElementById('minutosHidden');
+    // if (document.getElementById('todosMinutos').checked) {
+    //     checkboxes.classList.remove("agenda-checkboxes-show");
+    //     checkboxes.classList.remove("apenas-minutos-multiplos-de-cinco");
+    //     checkboxes.classList.add("agenda-checkboxes-hidden");
+    //     hidden.value = '*';
+    // }
+    if (document.getElementById('minutosMultiplosDeCinco').checked) {
+        checkboxes.classList.remove("agenda-checkboxes-hidden");
+        checkboxes.classList.add("agenda-checkboxes-show");
+        checkboxes.classList.add("apenas-minutos-multiplos-de-cinco");
+        var minutos = Array.from(checkboxes.querySelectorAll('.minuto:checked'))
+        minutos.forEach(cb => {
+            if (cb.value % 5 !== 0) cb.checked = false;
+        })
+        updateMinutos();
     } else {
+        checkboxes.classList.remove("apenas-minutos-multiplos-de-cinco");
         checkboxes.classList.remove("agenda-checkboxes-hidden");
         checkboxes.classList.add("agenda-checkboxes-show");
         updateMinutos();
@@ -136,11 +148,14 @@ function carregarCronExpression() {
     // Configura minutos
     document.getElementById('minutosHidden').value = minutos;
     if (minutos !== '*') {
-        document.getElementById('minutosEspecificos').checked = true;
+        let todosMultiplosDeCinco = true;
         minutos.split(',').forEach(min => {
             const checkbox = document.getElementById('min' + min.padStart(2, '0'));
             if (checkbox) checkbox.checked = true;
+            if (min % 5 !== 0) todosMultiplosDeCinco = false;
         });
+        document.getElementById('minutosEspecificos').checked = !todosMultiplosDeCinco;
+        document.getElementById('minutosMultiplosDeCinco').checked = todosMultiplosDeCinco;
     }
 
     // Configura horas
@@ -254,6 +269,21 @@ function carregarCronExpression() {
 
 }
 
+function validarForm() {
+    const erros = [];
+
+    const nome = document.getElementById('nome').value;
+    if (!nome || nome.trim() === '') {
+        erros.push("O nome deve ser preenchido.");
+    }
+
+    const minutos = document.getElementById('minutosHidden').value;
+    if (minutos === '*') {
+        erros.push("Selecione pelo menos um minuto.");
+    }
+    return erros;
+}
+
 function montarCronExpression() {
     const minutos = document.getElementById('minutosHidden').value;
     const horas = document.getElementById('horasHidden').value;
@@ -317,8 +347,7 @@ function carregarProximosEventos() {
                         month: '2-digit',
                         year: 'numeric',
                         hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
+                        minute: '2-digit'
                     });
                     return formatada;
                 }

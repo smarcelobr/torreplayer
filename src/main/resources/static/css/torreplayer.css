@@ -8,7 +8,6 @@
     color: whitesmoke;
 }
 
-
 #torreOutput {
     margin: 0.5em 0;
     border: darkgray solid 1px;
@@ -26,10 +25,18 @@ a {
     gap: 0 1.5em;
 }
 
-/*.agenda-checkboxes-show > div {*/
-/*    padding: 0 0.5em;*/
-/*}*/
-
 .agenda-checkboxes-hidden {
     display: none;
+}
+
+.apenas-minutos-multiplos-de-cinco > :not(div.minutoMultiploDeCinco) {
+    display: none;
+}
+
+.form-erros-hidden {
+    display: none;
+}
+
+div#form-erros > span {
+    display: block;
 }
