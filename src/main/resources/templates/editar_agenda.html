@@ -26,8 +26,15 @@
 
     <div th:insert="~{agenda-base::midia-card}" class="mb-3"></div>
 
-    <div class="alert alert-info form-erros-hidden" role="alert" id="form-erros">
+    <div id="form-erros">
     </div>
+
+    <template id="template-erro">
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <span>Mensagem de erro.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </template>
 
     <div>
         <form id="agendamento-form" method="POST" enctype="multipart/form-data" action=""
@@ -77,6 +84,21 @@
 
     const form = document.getElementById('agendamento-form');
 
+    function publica_erros(erros) {
+        // publica os erros em span dentro de form-erros
+        let formErros = document.getElementById('form-erros');
+        formErros.innerHTML = '';
+
+        erros.forEach(erro => {
+            const template = document.getElementById('template-erro');
+            const erroMsg = template.content.cloneNode(true);
+            let span = erroMsg.querySelector('span');
+            span.innerHTML = erro;
+            formErros.appendChild(erroMsg);
+        })
+        formErros.scrollIntoView({behavior: 'smooth', block: 'start'});
+    }
+
     form.addEventListener('submit', function(event) {
         const erros = validarForm()
 
@@ -84,18 +106,7 @@
             // Prevents the default form submission
             event.preventDefault();
             event.stopPropagation()
-
-            // publica os erros em span dentro de form-erros
-            let formErros = document.getElementById('form-erros');
-            formErros.innerHTML = '';
-
-            erros.forEach(erro => {
-                let span = document.createElement('span');
-                span.innerHTML = erro;
-                formErros.appendChild(span);
-            })
-            formErros.classList.remove('form-erros-hidden');
-            formErros.scrollIntoView({behavior: 'smooth', block: 'start'});
+            publica_erros(erros);
 
         } else {
             montarCronExpression();

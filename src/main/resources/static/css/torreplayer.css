@@ -32,11 +32,3 @@ a {
 .apenas-minutos-multiplos-de-cinco > :not(div.minutoMultiploDeCinco) {
     display: none;
 }
-
-.form-erros-hidden {
-    display: none;
-}
-
-div#form-erros > span {
-    display: block;
-}
