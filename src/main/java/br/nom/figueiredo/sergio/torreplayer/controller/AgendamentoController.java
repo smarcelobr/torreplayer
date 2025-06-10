@@ -87,6 +87,17 @@ public class AgendamentoController {
         return "editar_agenda";
     }
 
+    @GetMapping("{id:\\d+}/ver")
+    public String verAgendamentoPorId(Model model, @PathVariable long id) {
+        Agendamento agendamento = this.agendamentoService.getAgendamento(id);
+        if (isNull(agendamento)) {
+            throw new AgendamentoNaoEncontradoException(String.format("Agendamento %d não encontrado", id));
+        }
+        model.addAttribute("agendamento", agendamento);
+
+        return "consultar_agendamento";
+    }
+
     @PostMapping("{id:\\d+}")
     public String salvarAgendamento(@PathVariable long id,
                                     @RequestParam AgendamentoTipo tipo,

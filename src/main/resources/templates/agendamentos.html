@@ -48,12 +48,17 @@
                     </small>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-3">
                 <span th:text="${agendamento.nome}" class="col-12">Nome do agendamento</span>
             </div>
 
             <div class="row">
-                <a class="col-3 offset-5 btn btn-primary" role="button"
+                <a class="col-3 offset-1 btn btn-primary" role="button"
+                   href="/editar_agenda"
+                   th:href="@{/agendamento/{agendamentoId}/ver(agendamentoId=${agendamento.id})}">
+                    <i class="bi bi-calendar2-plus"></i> Detalhes</a>
+
+                <a class="col-3 offset-1 btn btn-primary" role="button"
                    href="/editar_agenda"
                    th:href="@{/agendamento/{agendamentoId}(agendamentoId=${agendamento.id})}">
                     <i class="bi bi-pencil-square"></i> Alterar</a>

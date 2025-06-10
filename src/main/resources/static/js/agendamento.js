@@ -318,8 +318,8 @@ function toogleAgendamentoAtivoCheckbox(checkboxElem) {
 }
 
 // obtem a data e hora do próximo evento do agendamento especificado pelo ID
-function getProximoEvento(agendamentoId) {
-    return fetch(`${URL.apiUrlBase}/agendamento/${agendamentoId}/next`)
+function getProximoEvento(agendamentoId, offset, limit) {
+    return fetch(`${URL.apiUrlBase}/agendamento/${agendamentoId}/next?offset=${offset}&limit=${limit}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Falha ao obter o próximo evento');
@@ -334,11 +334,10 @@ function getProximoEvento(agendamentoId) {
         })
 }
 
-// Adicione esta função no final do arquivo agendamento.js
 function carregarProximosEventos() {
     document.querySelectorAll('[id^="proximo-evento-"]').forEach(element => {
         const agendamentoId = element.id.replace('proximo-evento-', '');
-        getProximoEvento(agendamentoId)
+        getProximoEvento(agendamentoId, 0, 1)
             .then(data => {
                 if (data && data.length > 0) {
                     const evento = new Date(data[0].evento);
@@ -361,5 +360,50 @@ function carregarProximosEventos() {
                 console.error('Erro:', error);
             });
     });
+}
+
+function humanReadableCronExpression(cronExpression) {
+    const parts = cronExpression.split(' ');
+    if (parts.length !== 6) return cronExpression;
+
+    const [segundo, minuto, hora, dia, mes, diaSemana] = parts;
+
+    let texto = '';
+
+    if (diaSemana !== '*') {
+        const diasSemana = {
+            '0': 'domingo', '1': 'segunda', '2': 'terça',
+            '3': 'quarta', '4': 'quinta', '5': 'sexta', '6': 'sábado'
+        };
+        const dias = diaSemana.split(',')
+            .map(d => diasSemana[d])
+            .join(', ');
+        texto += `Todo(s) ${dias}`;
+    } else if (dia !== '*') {
+        texto += `No dia ${dia}`;
+        if (mes !== '*') {
+            const meses = {
+                '1': 'Janeiro', '2': 'Fevereiro', '3': 'Março',
+                '4': 'Abril', '5': 'Maio', '6': 'Junho',
+                '7': 'Julho', '8': 'Agosto', '9': 'Setembro',
+                '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'
+            };
+            texto += ` de ${meses[mes]}`;
+        }
+    }
+
+    if (hora !== '*') {
+        texto += ` às ${hora}h`;
+    }
+
+    if (minuto !== '*') {
+        if (texto === '') {
+            texto = `Aos ${minuto} minutos`;
+        } else {
+            texto += `:${minuto}`;
+        }
+    }
+
+    return texto || cronExpression;
 }
 
