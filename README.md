@@ -72,56 +72,14 @@ O pom.xml tem um plugin para fazer o upload do arquivo jar para o servidor.
 java -Dspring.profile.active=nave -jar /opt/torreplayer/musica.jar
 ```
 
-## GUI autostart file.  
-
-The bash script requires the GUI to be running before it can be started then you need to use the GUI autostart file.
-
-    $ sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
-
-    $ cat /etc/xdg/lxsession/LXDE-pi/autostart
-    (...)
-    @/opt/torreplayer/start.sh
-
-    $ ls -l /opt/torreplayer/start.sh
-    -rwxr-xr-x 1 appmusica appjava 342 Jun  4 15:06 /opt/torreplayer/start.sh
-
 ## App as a Service no Raspberry Pi
 
-**Não funcionou porque o cvlc precisa de GUI **
-
-    Cria grupo 
-    $ sudo groupadd appjava
-    Cria usuário (system) sem login e nem home
-    $ sudo adduser appmusica --system --home /home/appmusica
-    Adiciona o usuário ao grupo.
-    $ sudo adduser appmusica appjava
-    $ sudo adduser <seu_user> appjava
-
-Criar arquivo `/etc/sudoers.d/030_musica`:
-```
-appmusica       ALL=(ALL)       NOPASSWD: ALL
-```
-
-### MUSICA EM /OPT (apenas comandos )
+### MUSICA EM /OPT
 
 pi@gregorio:~ $ cd /opt
 pi@gregorio:/opt $ sudo mkdir musica
-pi@gregorio:/opt $ sudo groupadd appjava
-pi@gregorio:/opt $ sudo adduser pi appjava
-Adding user `pi' to group `appjava' ...
-Done.
-pi@gregorio:/opt $ sudo chown -R pi:appjava /opt/musica
-pi@gregorio:/opt $ sudo chmod a+x /opt/musica
+pi@gregorio:/opt $ sudo chmod a+x /opt/musica/*.sh
 pi@gregorio:/opt $ sudo chmod ug+rwx /opt/musica
-
-
-
-### MUSICA EM /OPT (versao antiga)
-
-```
-$ sudo mkdir /opt/musica
-$ sudo chown -R appmusica:appjava /opt/musica
-```
 
 Script `/opt/musica/start.sh` bash para iniciar o java:
 
@@ -131,7 +89,7 @@ Script `/opt/musica/start.sh` bash para iniciar o java:
 echo INICIANDO MUSICA
 
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-armhf
-WORKDIR=/opt/torreplayer
+WORKDIR=/opt/musica
 JAVA_OPTIONS=" -Xms512m -Xmx768m -server -Dspring.profiles.active=nave"
 # APP_OPTIONS=" -c /path/to/app.config -d /path/to/datadir "
 APP_OPTIONS=""
@@ -142,7 +100,7 @@ cd $WORKDIR || exit
 
 Dê permissão de execução ao script:
 ```
-$ sudo chmod a+x /opt/torreplayer/start.sh
+$ sudo chmod a+x /opt/musica/start.sh
 ```
 
 ### MUSICA AS A LINUX SERVICE

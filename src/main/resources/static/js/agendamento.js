@@ -378,30 +378,57 @@ function humanReadableCronExpression(cronExpression) {
         const dias = diaSemana.split(',')
             .map(d => diasSemana[d])
             .join(', ');
-        texto += `Todo(s) ${dias}`;
-    } else if (dia !== '*') {
-        texto += `No dia ${dia}`;
-        if (mes !== '*') {
-            const meses = {
-                '1': 'Janeiro', '2': 'Fevereiro', '3': 'Março',
-                '4': 'Abril', '5': 'Maio', '6': 'Junho',
-                '7': 'Julho', '8': 'Agosto', '9': 'Setembro',
-                '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'
-            };
-            texto += ` de ${meses[mes]}`;
-        }
+        texto += `Todo ${dias}`;
     }
 
-    if (hora !== '*') {
-        texto += ` às ${hora}h`;
+    if (dia !== '*') {
+        texto += `No(s) dia(s) ${dia}`;
     }
 
-    if (minuto !== '*') {
-        if (texto === '') {
-            texto = `Aos ${minuto} minutos`;
+    if (mes !== '*') {
+        const mapMeses = {
+            '1': 'Janeiro', '2': 'Fevereiro', '3': 'Março',
+            '4': 'Abril', '5': 'Maio', '6': 'Junho',
+            '7': 'Julho', '8': 'Agosto', '9': 'Setembro',
+            '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'
+        };
+        const meses = mes.split(',')
+            .map(d => mapMeses[d])
+            .join(', ');
+        texto += ` no(s) mês(es) ${meses}`;
+    }
+
+    let todasAsHoras = hora === '*';
+    let todosOsMinutos = minuto === '*';
+
+    if (todasAsHoras) {
+        if (todosOsMinutos) {
+            texto += ' a cada minuto';
         } else {
-            texto += `:${minuto}`;
+            let minutos = [];
+            minuto.split(',').forEach(m => {
+                minutos.push(`${m.toString().padStart(2, '0')}`);
+            });
+            texto += ' no(s) minuto(s) ' + minutos.join(',');
         }
+        texto += ' de todas as horas.';
+    } else {
+        // horas específicas
+        let horarios = [];
+        hora.split(',').forEach(h => {
+            if (todosOsMinutos) {
+                horarios.push(`${h.toString().padStart(2, '0')}h`);
+            } else {
+                minuto.split(',').forEach(m => {
+                    if (+m !== 0) {
+                        horarios.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+                    } else {
+                        horarios.push(`${h.toString().padStart(2, '0')}h`);
+                    }
+                });
+            }
+        })
+        texto += (todosOsMinutos ? ' a cada minuto das ' : ' às ') + horarios.join(', ') + '.';
     }
 
     return texto || cronExpression;

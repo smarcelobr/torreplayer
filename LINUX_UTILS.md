@@ -73,9 +73,33 @@ scp D:\code\github\smarcelobr\torreplayer\src\main\scripts\tocaMusica.sh pi@greg
 ```
 ## Iniciando o VLC no cron (do usuário) ao iniciar o raspberry
 
+Inicia o VLC no modo HTTP, com a playlist carregada a partir da pasta.
+
     $ crontab -e
 
 Incluir a seguinte linha:
 
     @reboot vlc --no-dbus -I http --http-password=abc123 --http-port=20000 --file-logging --logfile=/opt/musica/log/vlc.log --logmode=text --no-playlist-autostart --play-and-stop /opt/musica/midias/Brasileiras/* /opt/musica/midias/Canto\ Gregoriano/*
 
+
+## Rede Wifi
+
+Listar as redes wifi disponíveis:
+
+    $ sudo nmcli dev wifi list
+
+Criar uma conexão para uma rede wifi:
+
+    $ sudo nmcli dev wifi connect “SEU_SSID” password "SUA_SENHA" 
+
+ou, se quiser que pergunte a senha:
+
+    $ sudo nmcli dev wifi connect “SEU_SSID” -a 
+
+Para listas as conexões registradas:
+
+    $ sudo nmcli c show
+
+Para ativar um wifi específico:
+
+    $ sudo nmcli c up “NOME_CONEXAO”
