@@ -8,7 +8,6 @@ import br.nom.figueiredo.sergio.torreplayer.model.Album;
 import br.nom.figueiredo.sergio.torreplayer.model.Configuracoes;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
 import br.nom.figueiredo.sergio.torreplayer.model.Playlist;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +36,9 @@ public class PlayerCommandServiceImpl implements PlayerCommandService {
 
     @Value("${torre.cmd.opt.random}")
     private String cmdPlayOptRandom;
+
+    @Value("${torre.cmd.taskkill}")
+    private String cmdPlayTaskkill;
 
     @Value("${torre.cmd.spaceEscape}")
     private String cmdSpaceScape;
@@ -91,7 +93,7 @@ public class PlayerCommandServiceImpl implements PlayerCommandService {
         this.info = new TorrePlayerInfo();
         this.info.setArquivo(album);
         this.info.setStatus(TorrePlayerStatus.INICIANDO);
-        executaComando(StringUtils.appendIfMissing(album.getAbsolutePath(), "/"), repeat, random);
+        executaComando(album.getAbsolutePath(), repeat, random);
     }
 
     @Override
@@ -139,8 +141,6 @@ public class PlayerCommandServiceImpl implements PlayerCommandService {
             cmd = cmd.replace("#random", "");
         }
 
-
-
         processBuilder.command(cmd.split(","));
 
         try {
@@ -187,7 +187,8 @@ public class PlayerCommandServiceImpl implements PlayerCommandService {
                 sendKeys(this.stopKeys);
             }
         } else {
-            LOGGER.info("Não há música tocando, nada a fazer");
+            LOGGER.info("Não há música tocando, usando taskkill");
+            taskkill();
         }
     }
 
@@ -206,7 +207,18 @@ public class PlayerCommandServiceImpl implements PlayerCommandService {
 
     private void killProcess() {
         LOGGER.debug("Matando o processo");
-        this.process.destroy();
+        if (nonNull(this.process)) {
+            this.process.destroy();
+        }
+    }
+
+    private void taskkill() {
+        try {
+            LOGGER.info("kill: {}", cmdPlayTaskkill);
+            Runtime.getRuntime().exec(cmdPlayTaskkill);
+        } catch (IOException e) {
+            LOGGER.warn("Falha ao matar processo: {}", e.getMessage());
+        }
     }
 
     @Override

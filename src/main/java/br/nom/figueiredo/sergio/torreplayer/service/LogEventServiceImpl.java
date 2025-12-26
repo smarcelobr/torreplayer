@@ -14,7 +14,7 @@ public class LogEventServiceImpl implements LogEventService {
 
     @Override
     public void PlayerCommandStartedEvent(PlayerCommandStartedEvent pse) {
-        if (nonNull(pse.getInfo().getArquivo())) {
+        if (nonNull(pse.getInfo()) && nonNull(pse.getInfo().getArquivo())) {
             LOGGER.info("Comando iniciado: [{}]", pse.getInfo().getArquivo().getNome());
         } else {
             LOGGER.info("Comando iniciado.");
@@ -23,7 +23,7 @@ public class LogEventServiceImpl implements LogEventService {
 
     @Override
     public void handlePlayerCommandCompleted(PlayerCommandCompletedEvent pse) {
-        if (nonNull(pse.getInfo().getArquivo())) {
+        if (nonNull(pse.getInfo()) && nonNull(pse.getInfo().getArquivo())) {
             LOGGER.info("Comando concluído: [{}]", pse.getInfo().getArquivo().getNome());
         } else {
             LOGGER.info("Comando concluído.");
@@ -32,7 +32,7 @@ public class LogEventServiceImpl implements LogEventService {
 
     @Override
     public void handle(PlayerCommandStopRequestedEvent pse) {
-        if (nonNull(pse.getInfo().getArquivo())) {
+        if (nonNull(pse.getInfo()) && nonNull(pse.getInfo().getArquivo())) {
             LOGGER.info("Parada requisitada: [{}]", pse.getInfo().getArquivo().getNome());
         } else {
             LOGGER.info("Parada requisitada.");
