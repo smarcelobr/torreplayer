@@ -34,11 +34,11 @@ numid=1,iface=MIXER,name='PCM Playback Volume'
   | dBscale-min=-102.39dB,step=0.01dB,mute=1
 ```
 
-## Tocar um MP3 com o cvlc
+## Tocar um MP3 com o `cvlc` ou `vlc -I dummy`
 
 ```bash
 cvlc --no-dbus --play-and-exit --no-video-title-show file:///home/pi/Music/05\ Faixa\ 5.mp3
-cvlc --play-and-exit --no-video-title-show 'Music/populares/47-Attention - (Atención).mp3'
+vlc -I dummy --play-and-exit --no-video-title-show 'Music/populares/47-Attention - (Atención).mp3'
 ```
 
 Se for uma playlist:
@@ -46,6 +46,12 @@ Se for uma playlist:
 ```bash
 cvlc --play-and-exit --no-video-title-show --random /home/pi/Music/pop.m3u
 ```
+
+## Tocar um MP3 com o `vlc -I rc`
+
+    vlc -I rc --no-dbus --play-and-exit --no-video-title-show file:///home/pi/Music/05\ Faixa\ 5.mp3
+
+Com isso, você pode enviar comandos para o VLC, através da linha de comando.
 
 ## Gerenciando processos no Linux
 

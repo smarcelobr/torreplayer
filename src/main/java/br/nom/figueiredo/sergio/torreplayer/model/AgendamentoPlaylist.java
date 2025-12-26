@@ -1,8 +1,9 @@
 package br.nom.figueiredo.sergio.torreplayer.model;
 
-public class AgendamentoPlaylist extends Agendamento {
+public class AgendamentoPlaylist extends Agendamento implements Repeatable, Randomable {
     private Playlist playlist;
     private boolean random = true;
+    private boolean repeat = false;
 
     public Playlist getPlaylist() {
         return playlist;
@@ -23,5 +24,14 @@ public class AgendamentoPlaylist extends Agendamento {
 
     public void setRandom(boolean random) {
         this.random = random;
+    }
+
+    @Override
+    public boolean isRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        this.repeat = repeat;
     }
 }

@@ -5,6 +5,7 @@ import br.nom.figueiredo.sergio.torreplayer.model.AgendamentoTipo;
 public class AgendamentoMusicaJson extends AgendamentoJson {
     private String albumNome;
     private String musicaNome;
+    private boolean repeat;
 
     public String getAlbumNome() {
         return albumNome;
@@ -25,5 +26,13 @@ public class AgendamentoMusicaJson extends AgendamentoJson {
     @Override
     public AgendamentoTipo getTipo() {
         return AgendamentoTipo.MUSICA;
+    }
+
+    public boolean isRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        this.repeat = repeat;
     }
 }

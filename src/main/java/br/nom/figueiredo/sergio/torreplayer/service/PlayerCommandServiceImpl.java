@@ -1,14 +1,18 @@
 package br.nom.figueiredo.sergio.torreplayer.service;
 
+import br.nom.figueiredo.sergio.torreplayer.event.PlayerCommandCompletedEvent;
+import br.nom.figueiredo.sergio.torreplayer.event.PlayerCommandStartedEvent;
+import br.nom.figueiredo.sergio.torreplayer.event.PlayerCommandStopRequestedEvent;
 import br.nom.figueiredo.sergio.torreplayer.exception.MusicaException;
 import br.nom.figueiredo.sergio.torreplayer.model.Album;
+import br.nom.figueiredo.sergio.torreplayer.model.Configuracoes;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
 import br.nom.figueiredo.sergio.torreplayer.model.Playlist;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,16 +23,20 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
-public class TorrePlayerServiceImpl implements TorrePlayerService {
+public class PlayerCommandServiceImpl implements PlayerCommandService {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TorrePlayerServiceImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(PlayerCommandServiceImpl.class);
     private final ConfigService configService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Value("${torre.cmd.play}")
     private String cmdPlayTorre;
 
-    @Value("${torre.cmd.play.random}")
-    private String cmdPlayTorreRandom;
+    @Value("${torre.cmd.opt.repeat}")
+    private String cmdPlayOptRepeat;
+
+    @Value("${torre.cmd.opt.random}")
+    private String cmdPlayOptRandom;
 
     @Value("${torre.cmd.spaceEscape}")
     private String cmdSpaceScape;
@@ -55,67 +63,83 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
     private Process process;
     private TorrePlayerInfo info;
 
-    @Autowired
-    public TorrePlayerServiceImpl(ConfigService configService) {
+    public PlayerCommandServiceImpl(ConfigService configService, ApplicationEventPublisher applicationEventPublisher) {
         this.configService = configService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
-    public synchronized void tocar(Musica musica) {
+    public synchronized void tocar(Musica musica, boolean repeat) {
 
         if (this.isTocando()) {
             throw new MusicaException("Som está ocupado tocando...");
         }
+        LOGGER.info("Tocando musica: {}", musica.getNome());
         this.info = new TorrePlayerInfo();
         this.info.setArquivo(musica);
         this.info.setStatus(TorrePlayerStatus.INICIANDO);
-        executaComando(musica.getAbsolutePath(), false);
+        executaComando(musica.getAbsolutePath(), repeat, false);
     }
 
     @Override
-    public synchronized void tocar(Album album, Boolean random) {
+    public synchronized void tocar(Album album, boolean repeat, boolean random) {
 
         if (this.isTocando()) {
             throw new MusicaException("Som está ocupado tocando...");
         }
+        LOGGER.info("Tocando album: {}", album.getNome());
         this.info = new TorrePlayerInfo();
         this.info.setArquivo(album);
         this.info.setStatus(TorrePlayerStatus.INICIANDO);
-        executaComando(StringUtils.appendIfMissing(album.getAbsolutePath(), "/"), random);
+        executaComando(StringUtils.appendIfMissing(album.getAbsolutePath(), "/"), repeat, random);
     }
 
     @Override
-    public synchronized void tocar(Playlist playlist, boolean random) {
+    public synchronized void tocar(Playlist playlist, boolean repeat, boolean random) {
         if (this.isTocando()) {
             throw new MusicaException("Som está ocupado tocando...");
         }
+        LOGGER.info("Tocando playlist: {}", playlist.getNome());
         this.info = new TorrePlayerInfo();
         this.info.setArquivo(playlist);
         this.info.setStatus(TorrePlayerStatus.INICIANDO);
-        executaComando(playlist.getAbsolutePath(), random);
+        executaComando(playlist.getAbsolutePath(), repeat, random);
 
     }
 
-    private void executaComando(String absolutePath, boolean random) {
+    private void executaComando(String absolutePath, boolean repeat, boolean random) {
         // triggers the async task, which updates the cn status accordingly
         ProcessBuilder processBuilder = new ProcessBuilder();
 
         absolutePath = absolutePath.replace(" ", this.cmdSpaceScape);
 
         Integer volumeToDevice;
+        Configuracoes configuracoes = configService.getConfiguracoes();
         if (nonNull(volumeRemapMin) && nonNull(volumeRemapMax) && (volumeRemapMin < volumeRemapMax)) {
-            volumeToDevice = remap(configService.getConfiguracoes().getMasterVolume(),
-                    configService.getConfiguracoes().getMasterVolumeMin(),
-                    configService.getConfiguracoes().getMasterVolumeMax(),
+            volumeToDevice = remap(configuracoes.getMasterVolume(),
+                    configuracoes.getMasterVolumeMin(),
+                    configuracoes.getMasterVolumeMax(),
                     volumeRemapMin, volumeRemapMax);
         } else {
-            volumeToDevice = configService.getConfiguracoes().getMasterVolume();
+            volumeToDevice = configuracoes.getMasterVolume();
         }
 
-        String cmd = random ? cmdPlayTorreRandom : cmdPlayTorre;
+        String cmd = cmdPlayTorre;
         cmd = cmd
                 .replace("#musicaPath", absolutePath)
                 .replace("#musicaVolume", Integer.toString(volumeToDevice));
+        if (repeat) {
+            cmd = cmd.replace("#repeat", cmdPlayOptRepeat);
+        } else {
+            cmd = cmd.replace("#repeat", "");
+        }
+        if (random) {
+            cmd = cmd.replace("#random", cmdPlayOptRandom);
+        } else {
+            cmd = cmd.replace("#random", "");
+        }
+
+
 
         processBuilder.command(cmd.split(","));
 
@@ -124,6 +148,8 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
             LOGGER.info(cmdInfo);
             processBuilder.redirectErrorStream(true);
             this.process = processBuilder.start();
+            this.process.onExit().thenAccept((process) -> this.applicationEventPublisher.publishEvent(new PlayerCommandCompletedEvent(this.info)));
+            this.applicationEventPublisher.publishEvent(new PlayerCommandStartedEvent(this.info));
         } catch (IOException e) {
             throw new MusicaException(String.format("Error writing file to output stream. Musica was '%s'",
                     absolutePath), e);
@@ -149,8 +175,8 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
 
     @Override
     public synchronized void stop() {
+        this.applicationEventPublisher.publishEvent(new PlayerCommandStopRequestedEvent(this.info));
         if (this.isTocando()) {
-            LOGGER.debug("Parando a música...");
             if (nonNull(this.info)) {
                 this.info.appendOutput("Parando a música...");
                 this.info.setStatus(TorrePlayerStatus.PARANDO);
@@ -160,6 +186,8 @@ public class TorrePlayerServiceImpl implements TorrePlayerService {
             } else if (stopMode == TorrePlayerStopMode.SEND_KEYS) {
                 sendKeys(this.stopKeys);
             }
+        } else {
+            LOGGER.info("Não há música tocando, nada a fazer");
         }
     }
 

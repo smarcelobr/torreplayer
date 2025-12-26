@@ -59,6 +59,7 @@ public class AgendamentoRepositoryJsonImpl implements AgendamentoRepository {
                         case ALBUM -> {
                             AgendamentoAlbum aa = new AgendamentoAlbum();
                             aa.setAlbum(musicaRepository.getAlbumByNome(((AgendamentoAlbumJson) json).getAlbumNome()));
+                            aa.setRepeat(((AgendamentoAlbumJson) json).isRepeat());
                             aa.setRandom(((AgendamentoAlbumJson) json).isRandom());
                             agendamento = aa;
                         }
@@ -67,12 +68,14 @@ public class AgendamentoRepositoryJsonImpl implements AgendamentoRepository {
                             Album album = musicaRepository.getAlbumByNome(((AgendamentoMusicaJson) json).getAlbumNome());
                             Musica musica = musicaRepository.getMusicaByNome(album, ((AgendamentoMusicaJson) json).getMusicaNome());                            
                             am.setMusica(musica);
+                            am.setRepeat(((AgendamentoMusicaJson) json).isRepeat());
                             agendamento = am;
                         }
                         case PLAYLIST -> {
                             AgendamentoPlaylist ap = new AgendamentoPlaylist();
                             Playlist playlist = musicaRepository.getPlaylistByNome(((AgendamentoPlaylistJson) json).getPlaylistNome());                            
                             ap.setPlaylist(playlist);
+                            ap.setRepeat(((AgendamentoPlaylistJson) json).isRepeat());
                             ap.setRandom(((AgendamentoPlaylistJson) json).isRandom());
                             agendamento = ap;
                         }
@@ -140,19 +143,22 @@ public class AgendamentoRepositoryJsonImpl implements AgendamentoRepository {
                         case ALBUM -> {
                             AgendamentoAlbumJson aa = new AgendamentoAlbumJson();
                             aa.setAlbumNome(((AgendamentoAlbum) agendamento).getAlbum().getNome());
-                            aa.setRandom(((AgendamentoAlbum) agendamento).isRandom());
+                            aa.setRepeat(((Repeatable) agendamento).isRepeat());
+                            aa.setRandom(((Randomable) agendamento).isRandom());
                             json = aa;
                         }
                         case MUSICA -> {
                             AgendamentoMusicaJson am = new AgendamentoMusicaJson();
                             am.setAlbumNome(((AgendamentoMusica) agendamento).getMusica().getAlbum().getNome());
                             am.setMusicaNome(((AgendamentoMusica) agendamento).getMusica().getNome());
+                            am.setRepeat(((Repeatable) agendamento).isRepeat());
                             json = am;
                         }
                         case PLAYLIST -> {
                             AgendamentoPlaylistJson ap = new AgendamentoPlaylistJson();
                             ap.setPlaylistNome(((AgendamentoPlaylist) agendamento).getPlaylist().getNome());
-                            ap.setRandom(((AgendamentoPlaylist) agendamento).isRandom());
+                            ap.setRepeat(((Repeatable) agendamento).isRepeat());
+                            ap.setRandom(((Randomable) agendamento).isRandom());
                             json = ap;
                         }
                         case PARAR -> {

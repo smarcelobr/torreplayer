@@ -1,13 +1,17 @@
 # Torre Player
 
+## Build the jar
+
+    mvn clean package -DskipTests
+
 ## Instalação no Raspberry Pi
 
 ### Pré-requisitos
 
 - Raspberry Pi 3 ou superior
   (Raspbian OS Lite 32-bit with no desktop)
-- JAVA 11 ou superior
-- VLC para Raspbian OS Lite
+- JAVA 17
+- VLC para Raspbian OS Lite ou para Windows (se estiver desenvolvendo no windows)
 
 ### Instalação do Java
 

@@ -3,6 +3,7 @@ package br.nom.figueiredo.sergio.torreplayer.controller.dto;
 public class AlbumMusicaDTO {
     private String albumNome;
     private String musicaNome;
+    private Boolean repeat;
 
     public String getAlbumNome() {
         return albumNome;
@@ -18,5 +19,13 @@ public class AlbumMusicaDTO {
 
     public void setMusicaNome(String musicaNome) {
         this.musicaNome = musicaNome;
+    }
+
+    public Boolean getRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(Boolean repeat) {
+        this.repeat = repeat;
     }
 }

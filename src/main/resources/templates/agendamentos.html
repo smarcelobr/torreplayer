@@ -3,7 +3,7 @@
 <head th:replace="~{base :: head}"></head>
 <!--/*@thymesVar id="cfg" type="br.nom.figueiredo.sergio.torreplayer.model.Configuracoes"*/-->
 <!--/*@thymesVar id="msg" type="java.lang.String"*/-->
-<!--/*@thymesVar id="agendamentos" type="java.util.List<br.nom.figueiredo.sergio.torreplayer.model.AgendamentoMusica>"*/-->
+<!--/*@thymesVar id="agendamentos" type="java.util.List<br.nom.figueiredo.sergio.torreplayer.model.Agendamento>"*/-->
 <body>
 <div class="container">
 
@@ -24,7 +24,7 @@
     <ul class="list-group">
         <li class="list-group-item" th:each="agendamento : ${agendamentos}">
             <div class="row">
-                <div class="col-3 col-md-2 col-lg-1">
+                <div class="col-3 col-md-3 col-lg-2">
             <span class="form-switch">
             <input class="form-check-input" type="checkbox" role="switch"
                    th:data-agendamento-id="${agendamento.id}"
@@ -34,14 +34,16 @@
             </span>
 
                     <span th:switch="${agendamento.tipo.name()}">
-                <i class="bi bi-volume-mute-fill" th:case="'PARAR'"></i>
-                <i class="bi bi-music-note" th:case="'MUSICA'"></i>
-                <i class="bi bi-vinyl-fill" th:case="'ALBUM'"></i>
-                <i class="bi bi-music-note-list" th:case="'PLAYLIST'"></i>
+                <i class="bi bi-volume-mute-fill" title="Parar a m&uacute;sica" th:case="'PARAR'"></i>
+                <i class="bi bi-music-note" title="M&uacute;sica" th:case="'MUSICA'"></i>
+                <i class="bi bi-vinyl-fill" title="&Aacute;lbum" th:case="'ALBUM'"></i>
+                <i class="bi bi-music-note-list" title="Playlist" th:case="'PLAYLIST'"></i>
             </span>
+                    <i class="bi bi-repeat" title="Repetir" th:if="${(agendamento.tipo.name()=='MUSICA' || agendamento.tipo.name()=='ALBUM' || agendamento.tipo.name()=='PLAYLIST') && agendamento.repeat}"></i>
+                    <i class="bi bi-shuffle" title="Aleat&oacute;rio" th:if="${(agendamento.tipo.name()=='ALBUM' || agendamento.tipo.name()=='PLAYLIST') && agendamento.random}"></i>
                 </div>
 
-                <div class="col-9 col-md-10 col-lg-11">
+                <div class="col-9 col-md-9 col-lg-10">
                     <!-- Adicionando o próximo evento -->
                     <small class="text-muted ms-2">
                         Próximo: <span th:id="'proximo-evento-' + ${agendamento.id}">Carregando...</span>

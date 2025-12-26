@@ -16,12 +16,13 @@ public class PlayerSchedulingServiceImpl implements PlayerSchedulingService {
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(PlayerSchedulingServiceImpl.class);
     private final TaskScheduler taskScheduler;
-    private final TorrePlayerService torrePlayerService;
+    private final PlayerCommandService playerCommandService;
     private final Map<Long, ScheduledFuture<?>> jobsMap = new HashMap<>();
 
-    public PlayerSchedulingServiceImpl(TaskScheduler taskScheduler, TorrePlayerService torrePlayerService) {
+    public PlayerSchedulingServiceImpl(TaskScheduler taskScheduler,
+                                       PlayerCommandService playerCommandService) {
         this.taskScheduler = taskScheduler;
-        this.torrePlayerService = torrePlayerService;
+        this.playerCommandService = playerCommandService;
     }
 
     @Override
@@ -29,7 +30,7 @@ public class PlayerSchedulingServiceImpl implements PlayerSchedulingService {
         remove(agendamento);
         LOGGER.info("Agendamento nome=[{}] e cron={}", agendamento.getNome(), agendamento.getCronExpression());
 
-        Runnable tasklet = new PlayerTasklet(torrePlayerService, agendamento);
+        Runnable tasklet = new PlayerTasklet(playerCommandService, agendamento);
 
         ScheduledFuture<?> scheduledTask = taskScheduler.schedule(tasklet,
                 new CronTrigger(agendamento.getCronExpression(), TimeZone.getTimeZone(TimeZone.getDefault().getID())));

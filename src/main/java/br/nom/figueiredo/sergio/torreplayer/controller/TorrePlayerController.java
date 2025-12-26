@@ -3,8 +3,8 @@ package br.nom.figueiredo.sergio.torreplayer.controller;
 import br.nom.figueiredo.sergio.torreplayer.model.Album;
 import br.nom.figueiredo.sergio.torreplayer.model.Musica;
 import br.nom.figueiredo.sergio.torreplayer.service.MusicaService;
+import br.nom.figueiredo.sergio.torreplayer.service.PlayerCommandService;
 import br.nom.figueiredo.sergio.torreplayer.service.TorrePlayerInfo;
-import br.nom.figueiredo.sergio.torreplayer.service.TorrePlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,45 +18,47 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class TorrePlayerController {
 
     private final MusicaService musicaService;
-    private final TorrePlayerService torrePlayerService;
+    private final PlayerCommandService playerCommandService;
 
     @Autowired
-    public TorrePlayerController(MusicaService musicaService, TorrePlayerService torrePlayerService) {
+    public TorrePlayerController(MusicaService musicaService, PlayerCommandService playerCommandService) {
         this.musicaService = musicaService;
-        this.torrePlayerService = torrePlayerService;
+        this.playerCommandService = playerCommandService;
     }
 
     @GetMapping(value = "{albumNome}/{musicaNome}")
     public String playTorre(@PathVariable String albumNome,
-                            @PathVariable String musicaNome) {
+                            @PathVariable String musicaNome,
+                            @RequestParam(required = false, defaultValue = "false") Boolean repeat) {
 
         Album album = musicaService.getAlbumByNome(albumNome);
         Musica musica = musicaService.getMusicaByNome(album, musicaNome);
-        torrePlayerService.tocar(musica);
+        playerCommandService.tocar(musica, repeat);
 
         return "redirect:/torre/info";
     }
 
     @GetMapping(value = "album/{albumNome}")
     public String playTorre(@PathVariable String albumNome,
+                            @RequestParam(required = false, defaultValue = "false") Boolean repeat,
                             @RequestParam(required = false, defaultValue = "false") Boolean random) {
 
         Album album = musicaService.getAlbumByNome(albumNome);
-        torrePlayerService.tocar(album, random);
+        playerCommandService.tocar(album, repeat, random);
 
         return "redirect:/torre/info";
     }
 
     @GetMapping(value = "info")
     public String acompanhamentoTorre(Model model) {
-        TorrePlayerInfo info = torrePlayerService.getInfo();
+        TorrePlayerInfo info = playerCommandService.getInfo();
         model.addAttribute("torrePlayerInfo", info);
         return "torrePlayer/info.html";
     }
 
     @GetMapping(value = "stop")
     public String stopTorre(Model model) {
-        torrePlayerService.stop();
+        playerCommandService.stop();
         model.addAttribute("msg", "Parando a música...");
         return "forward:/tocando";
     }

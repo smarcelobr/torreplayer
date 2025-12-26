@@ -1,18 +1,15 @@
 package br.nom.figueiredo.sergio.torreplayer.service;
 
-import br.nom.figueiredo.sergio.torreplayer.model.Agendamento;
-import br.nom.figueiredo.sergio.torreplayer.model.AgendamentoAlbum;
-import br.nom.figueiredo.sergio.torreplayer.model.AgendamentoMusica;
-import br.nom.figueiredo.sergio.torreplayer.model.AgendamentoPlaylist;
+import br.nom.figueiredo.sergio.torreplayer.model.*;
 
 public class PlayerTasklet implements Runnable {
     private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(PlayerTasklet.class);
 
-    private final TorrePlayerService torrePlayerService;
+    private final PlayerCommandService playerCommandService;
     private final Agendamento agendamento;
 
-    public PlayerTasklet(TorrePlayerService torrePlayerService, Agendamento agendamento) {
-        this.torrePlayerService = torrePlayerService;
+    public PlayerTasklet(PlayerCommandService playerCommandService, Agendamento agendamento) {
+        this.playerCommandService = playerCommandService;
         this.agendamento = agendamento;
     }
 
@@ -24,16 +21,16 @@ public class PlayerTasklet implements Runnable {
             if (agendamento.isAtivo()) {
                 switch (agendamento.getTipo()) {
                     case ALBUM:
-                        torrePlayerService.tocar(((AgendamentoAlbum) agendamento).getAlbum(), ((AgendamentoAlbum) agendamento).isRandom());
+                        playerCommandService.tocar(((AgendamentoAlbum) agendamento).getAlbum(), ((Repeatable) agendamento).isRepeat(), ((Randomable) agendamento).isRandom());
                         break;
                     case PLAYLIST:
-                        torrePlayerService.tocar(((AgendamentoPlaylist) agendamento).getPlaylist(), ((AgendamentoPlaylist) agendamento).isRandom());
+                        playerCommandService.tocar(((AgendamentoPlaylist) agendamento).getPlaylist(), ((Repeatable) agendamento).isRepeat(), ((Randomable) agendamento).isRandom());
                         break;
                     case MUSICA:
-                        torrePlayerService.tocar(((AgendamentoMusica) agendamento).getMusica());
+                        playerCommandService.tocar(((AgendamentoMusica) agendamento).getMusica(), ((Repeatable) agendamento).isRepeat());
                         break;
                     case PARAR:
-                        torrePlayerService.stop();
+                        playerCommandService.stop();
                         break;
                 }
             }
